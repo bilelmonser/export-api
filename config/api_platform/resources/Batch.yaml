@@ -1,0 +1,91 @@
+App\Entity\Batch:
+  attributes:
+    security: 'is_granted("ROLE_USER")'
+    route_prefix: /sage/company
+  collectionOperations:
+    get:
+      controller: NotFoundAction::class
+      read: false
+      output: false
+      openapi_context:
+        summary: hidden
+    sage_batch_create_batch:
+      denormalization_context:
+        groups: [ 'batch:write' ]
+      method: 'POST'
+      path: /sage/batch/createBatch/accountPractice/{accountPractice}/companyId/{companyId}
+      requirements:
+        id: \d+
+      controller: TaxResidenceController::class
+      read: [ 'false' ]
+      output: [ 'true' ]
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Create a new Batch  The batch will be queued for the destination's company.
+        description: >
+          - Create a new Batch.
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  country:
+                    type: string
+                    min: 2
+                    max: 3
+                    description: country of the resident.
+
+                  taxPayerId:
+                    type: string
+                    max: 255
+                    description: Tax payer's id.
+
+                  liabilityWaiver:
+                    type: boolean
+                    default: true
+                    description: When there is no taxPayerId for a residence, this field shall be set to true.
+
+                example:
+                  country: 'TU'
+                  taxPayerId: 'xxxxxxxxxxxxxxxx'
+                  liabilityWaiver: 1
+
+        responses:
+          '201':
+            description: TaxResidence created successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '406':
+            description: Tax Residence Id all ready in use .
+          '422':
+            description: UserCsb not found.
+          '5XX':
+            description: Unexpected error.
+  itemOperations:
+    get:
+      normalization_context:
+        groups: [ 'kyb:read','kyc:read' ]
+
+      openapi_context:
+        summary: hidden
+    

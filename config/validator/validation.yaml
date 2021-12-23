@@ -1,0 +1,4 @@
+App\Entity\Treezor\TaxResidences\TaxResidences:
+  properties:
+    country:
+      - Choice: { callback: getCountries }

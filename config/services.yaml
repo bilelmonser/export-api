@@ -1,0 +1,65 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    app.path.files_upload: /uploads/files
+    treezor_path : https://facnote.sandbox.treezor.co/v1/
+    brochures_directory: '%kernel.project_dir%/public/uploads/entries'
+    baseUrlApi: 'https://cloudconnector.linkup-sage.com/v1'
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        bind:
+            # webhook
+            $webhookSecret: 51a81031d77440bd57d483222e4f508291e539f8
+            # treezor auth
+            $treezorAuthUri:  https://facnote.sandbox.treezor.co/oauth/token
+            $treezorClientId: ee04ea34-9dde-481b-9c56-a5127bf45cd8
+            $treezorClientSecret: x6fV5YrhugcuAb3uC4Dc7g
+
+            # Users
+            $treezorAddUserUrl:  '%treezor_path%users'
+            $treezorReqRevUserUrl: '%treezor_path%users/{userId}/Kycreview/'
+
+            # Documents
+            $treezorDocumentUri: '%treezor_path%documents'
+
+            # Wallet
+            $walletAddUrl: '%treezor_path%wallets'
+            $walletEditUrl: '%treezor_path%/wallets/{id}'
+            $walletDeleteUrl: '%treezor_path%/wallets/{id}'
+
+            # Sage ClickUp
+            $baseUrlApi: 'https://cloudconnector.linkup-sage.com/v1'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\OpenApi\OpenApiFactory:
+        decorates: 'api_platform.openapi.factory'
+        arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
+        autoconfigure: false
+
+    App\OpenApi\JwtDecorator:
+        decorates: 'api_platform.openapi.factory'
+        autoconfigure: false
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%brochures_directory%'
+    App\Service\SageClickUpService:
+        arguments:
+            $baseUrlSageApi: '%baseUrlApi%'

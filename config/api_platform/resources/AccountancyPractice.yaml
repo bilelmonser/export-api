@@ -1,0 +1,130 @@
+App\Entity\AccountancyPractice:
+  normalization_context:
+    groups: [ 'accountancyPractice:read','accountancyPractice:read' ]
+
+  denormalization_context:
+    groups: [ 'accountancyPractice:write','accountancyPractice:write' ]
+
+  attributes:
+    security: 'is_granted("ROLE_USER")'
+
+
+  collectionOperations:
+    get:
+      controller: NotFoundAction::class
+      read: false
+      output: false
+      openapi_context:
+        summary: hidden
+    sage_accountancy_practices:
+      denormalization_context:
+        groups: [ 'accountancyPractice:write' ]
+      method: 'GET'
+      path: /sage/accountancy/getAccountancyPractices
+      controller: AccountancyController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Accountancy Practices.
+        description: >
+          - With this endpoint you can get All Accountancy Practices
+
+          - Mandatory parameters  :
+
+        parameters: ~
+        responses:
+          '201':
+            description: Wallet added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_options_accountancy_practices:
+      denormalization_context:
+        groups: [ 'accountancyPractice:write' ]
+      method: 'GET'
+      path: /sage/accountancy/getAccountancyPracticesOption/accountPractice/{accountPractice}
+      controller: Accountancy::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Options Accountancy Practice.
+        description: >
+          - With this endpoint you can get All Options Accountancy Practice
+
+          - Mandatory parameters  :
+
+                - accountPractice : Account Practice ID:.
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+           
+
+
+
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  walletTypeId:
+                    type: integer
+                    enum:
+                      - '9'
+                      - '10'
+                      - '13'
+                      - '14'
+                  tariffId:
+                    type: integer
+                    description: 'Wallet pricing id.'
+                  userId:
+                    type: integer
+                    description: "Wallet owner's id.."
+                  currency:
+                    type: string
+                    description: "The currency that will be used for all wallet money transactions like EUR"
+                  eventName:
+                    type: string
+                    min: 1
+                    max: 255
+                    description: 'Event name.'
+
+                example:
+                  walletTypeId: 9
+                  tariffId: 0
+                  walletStatus: "PENDING"
+                  userId: 0
+                  currency: 'EUR'
+                  eventName: 'Wallet Name'
+
+        responses:
+          '201':
+            description: Wallet added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+  itemOperations:
+    get:
+      normalization_context:
+        groups: [ 'kyb:read','kyc:read' ]
+
+      openapi_context:
+        summary: hidden
