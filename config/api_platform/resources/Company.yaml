@@ -1,0 +1,54 @@
+App\Entity\Company:
+  attributes:
+    security: 'is_granted("ROLE_USER")'
+    route_prefix: /sage/company
+  collectionOperations:
+    get:
+      controller: NotFoundAction::class
+      read: false
+      output: false
+      openapi_context:
+        summary: hidden
+    sage_company_get_companies:
+      denormalization_context:
+        groups: [ 'accountancyPractice:write' ]
+      method: 'GET'
+      path: /sage/company/getCompanies/accountPractice/{accountPractice}
+      controller: CompanyController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Companies from Accountancy Practices.
+        description: >
+          - With this endpoint you can get All Companies from Accountancy Practices
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '201':
+            description: Wallet added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+  itemOperations:
+    get:
+      normalization_context:
+        groups: [ 'kyb:read','kyc:read' ]
+
+      openapi_context:
+        summary: hidden
+    

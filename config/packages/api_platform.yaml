@@ -1,0 +1,50 @@
+api_platform:
+    title: Sage ClickUp API Client
+    description: API description
+    version: 1.0.0
+    openapi:
+        contact:
+            name:
+            url:
+            email:
+        termsOfService:
+        license:
+            name:
+            url:
+
+    defaults:
+        pagination_client_items_per_page: false
+        pagination_items_per_page: 50
+    mapping:
+#        paths: ['%kernel.project_dir%/src/Entity']
+        paths: ['%kernel.project_dir%/config/api_platform/resources']
+    formats:
+        json: ['application/json']
+        jsonld: ['application/ld+json']
+        html: ['text/html']
+        multipart: ['multipart/form-data']
+#    patch_formats:
+#        json: ['application/merge-patch+json']
+#    swagger:
+#        versions: [3]
+#        api_keys:
+#            apiKey:
+#                name: Authorization
+#                type: header
+#    allow_plain_identifiers: true
+#
+#    collection:
+#        exists_parameter_name: 'exists'
+#        order: 'DESC'
+#        order_parameter_name: 'order'
+#        pagination:
+#            page_parameter_name: 'page'
+#            enabled_parameter_name: 'pagination'
+#            items_per_page_parameter_name: 'limit'
+#            partial_parameter_name: 'partial'
+#            enabled: true
+#            partial: false
+#            client_enabled: false
+#            client_items_per_page: false
+#            client_partial: false
+#            items_per_page: 50
