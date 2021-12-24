@@ -22,9 +22,9 @@ class SageClickUpOfflineService
     }
 
     /**
-     * Undocumented function
+     * check Accountancy Practices function
      *
-     * @param [type] $params
+     * @param array $params
      * @return void
      */
     public function checkAccountingPractices($params){

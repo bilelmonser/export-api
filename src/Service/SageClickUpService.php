@@ -124,7 +124,7 @@ class SageClickUpService
      * @return void
      */
     public function getTradingAccounts(string $accountPractice,string $companyId,string $periodId){
-        $user = $this->ConnectedUser;
+        $sageModel = $this->ConnectedSageModel;
         $appId=$sageModel->getAppId();
         $tokenAccess=$sageModel->getToken();
         $url=$this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/accounts/trading';
