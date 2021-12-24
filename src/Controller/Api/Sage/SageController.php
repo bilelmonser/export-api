@@ -13,9 +13,9 @@ class SageController extends AbstractController
 {
 	private $sageService;
     public function __construct(SageClickUpService $sageService){
-		$this->sageService=$sageService;        
+		$this->sageService=$sageService;    
 	}
 	public function getSageService(){
 		return $this->sageService;
 	}
-}
+} 

@@ -21,12 +21,12 @@ class SageModel
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $urlAuth;
+    private $urlAuth="https://id.sage.com/oauth/token";
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $grantType;
+    private $grantType="client_credentials";
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -41,7 +41,7 @@ class SageModel
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $audiance;
+    private $audiance="SGEP/CloudConnectorApiProd";
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)

@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
+use App\Service\SageClickUpOfflineService;
 
 class UserController extends AbstractController
 {
@@ -60,4 +61,45 @@ class UserController extends AbstractController
         return new Response(null, Response::HTTP_CREATED);
     }
 
+    /**
+     * @Route("/api/sage/accountancy/check", name="sage_accountancy_practices_check")
+     */
+    public function checkAccountancyPractices(Request $request,SageClickUpOfflineService $sageServiceOffline)
+    {
+        $params=[];
+        $error=false;
+        if(($request->request->get('accountancyPractices')!==null) && !empty($request->request->get('accountancyPractices'))){
+            $params["accountancyPractices"]=$request->request->get('accountancyPractices');
+        }else{
+            $error=true;
+        }
+        if(($request->request->get('appId')!==null) && !empty($request->request->get('appId'))){
+            $params["appId"]=$request->request->get('appId');
+        }else{
+            $error=true;
+        }
+        if(($request->request->get('clientId')!==null) && !empty($request->request->get('clientId'))){
+            $params["clientId"]=$request->request->get('clientId');
+        }else{
+            $error=true;
+        }
+        if(($request->request->get('clientSecret')!==null) && !empty($request->request->get('clientSecret'))){
+            $params["clientSecret"]=$request->request->get('clientSecret');
+        }else{
+            $error=true;
+        }
+        $response = new Response();
+        $resp="";
+        if($error){
+            $response->setStatusCode(400);  
+            $resp="";
+        }else{
+            $response->setStatusCode(200);  
+            $resp=$sageServiceOffline->checkAccountingPractices($params);
+            $resp=$resp["content"];
+        }
+        $response->setContent($resp);        
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }	
 }

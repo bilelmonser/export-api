@@ -2,13 +2,10 @@
 
 namespace App\Controller\Api\Sage;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Controller\Api\Sage\SageController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\User;
-use App\Service\SageClickUpService;
 
 class AcountancyController extends SageController
 {
