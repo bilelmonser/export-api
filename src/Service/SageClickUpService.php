@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use Symfony\Contracts\HttpClient\ResponseInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Entity\SageModel;
@@ -15,7 +13,6 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Service\App\SerializeService;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Psr\Log\LoggerInterface;
 
