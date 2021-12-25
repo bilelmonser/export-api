@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use Symfony\Contracts\HttpClient\ResponseInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Entity\SageModel;
@@ -15,7 +13,6 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Dotenv\Dotenv;
 use App\Service\App\SerializeService;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Psr\Log\LoggerInterface;
 
@@ -45,8 +42,9 @@ class SageClickUpService
         $this->accountancyPractice=( $request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') :'';
         $this->cltHttpService=$cltHttpService;
         $this->security = $security;
-        //$this->loginSage();
-        $this->loginSageByAccountancyPractice();
+        if($this->loginSageByAccountancyPractice() === false){
+            $this->loginSage();
+        }
         $this->serializer = $serializeService;
         $this->baseUrlApi = $baseUrlSageApi;
         $this->log=$logger;
@@ -70,7 +68,7 @@ class SageClickUpService
             $listLocaly=$em->getRepository(AccountancyPractice::class)->findBySageModelAll($sageModel);
             return $this->serializer->SerializeContent($listLocaly);
         }else{
-            $this->saveAccountancyPractices(json_decode($result["content"],true),$em,$user);
+            $this->saveAccountancyPractices(json_decode($result["content"],true),$em,$this->ConnectedUser);
             return $result["content"];
         }
     }
@@ -124,7 +122,7 @@ class SageClickUpService
      * @return void
      */
     public function getTradingAccounts(string $accountPractice,string $companyId,string $periodId){
-        $user = $this->ConnectedUser;
+        $sageModel = $this->ConnectedSageModel;
         $appId=$sageModel->getAppId();
         $tokenAccess=$sageModel->getToken();
         $url=$this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/accounts/trading';
@@ -256,8 +254,10 @@ class SageClickUpService
                 return false;
             }
             $this->ConnectedUser=$em->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']);
+            $this->ConnectedSageModel=$this->ConnectedUser->getSageconfigs()->first();
         }else{
             $this->ConnectedUser = $user;
+            $this->ConnectedSageModel=$user->getSageconfigs()->first();
         }
         
     }
@@ -271,7 +271,11 @@ class SageClickUpService
         $sageModel=$em->getRepository(SageModel::class)->findOneBy(['AccountancyPractice' => $this->accountancyPractice]);
         
         $today = date("Y-m-d H:i:s");
+        if(empty($sageModel)){
+            return false;
+        }
         $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
+    
         if(empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ( $today > $dateExpired ))){
             $url_auth=$sageModel->getUrlAuth();
             $grant_type=$sageModel->getGrantType();

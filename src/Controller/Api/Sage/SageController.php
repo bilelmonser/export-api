@@ -12,10 +12,20 @@ use App\Service\SageClickUpService;
 class SageController extends AbstractController
 {
 	private $sageService;
+	/**
+	 * construct function
+	 *
+	 * @param SageClickUpService $sageService
+	 */
     public function __construct(SageClickUpService $sageService){
-		$this->sageService=$sageService;        
+		$this->sageService=$sageService;    
 	}
+	/**
+	 * get Sage Service function
+	 *
+	 * @return void
+	 */
 	public function getSageService(){
 		return $this->sageService;
 	}
-}
+} 
