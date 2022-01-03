@@ -54,22 +54,26 @@ class ClientHttpService
         if(!empty($token)){
             $paramsBody["auth_bearer"]=$token;
         }
-        try {
-            $response = $this->client->request(
-                $method,
-                $url,
-                $paramsBody
-                
-            );
-        }
-        catch(Exception $e) {
-            $result["content"]="error !";
-            $result["status"]=500;
-            return $result;
-        }
         
+        $response = $this->client->request(
+            $method,
+            $url,
+            $paramsBody
+            
+        );
         $statusCode = $response->getStatusCode();
-        $content = $response->getContent();
+        if($statusCode == 200 || $statusCode == 201){
+            $content = $response->getContent();
+            $result["content"]=$content;
+            $result["status"]=$statusCode;
+        }else{
+            $result["content"]="error";
+            $result["status"]=$statusCode;
+        }
+        return $result;
+        /*dump($statusCode);
+        die("lkollk");
+        
         $statusOk=['200','201','202','204','205'];
         $statusNotFound=['401','402','403','404','415'];
         if(!empty($content)){
@@ -83,8 +87,8 @@ class ClientHttpService
             return $result; 
         }
         $result["content"]=$content;
-        $result["status"]=$statusCode;
-        return $result;        
+        $result["status"]=$statusCode;*/
+                
     }
 
 }
