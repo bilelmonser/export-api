@@ -155,10 +155,10 @@ class SageClickUpService
         
 
         
-        if(in_array($result["status"],$this->statusNotFound)){
-            $response["content"]="ko";
-        }else{
+        if(($result["status"]==200) ||($result["status"]==201)){
             $response["content"]=$result["content"];
+        }else{
+            $response["content"]="error";
         }
         return $response;
     }
@@ -173,10 +173,17 @@ class SageClickUpService
     public function getEntries(string $accountPractice,string $companyId,string $periodId)
     {       
         $sageModel=$this->ConnectedSageModel;
+        $response=[];
         $appId=$sageModel->getAppId();
         $tokenAccess=$sageModel->getToken();
         $url=$this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/entries';
-        return $this->cltHttpService->execute($url,"GET",[],$tokenAccess);
+        $result = $this->cltHttpService->execute($url,"GET",[],$tokenAccess);
+        $response["status"] =  $result["status"];
+        if(($result["status"]==200) ||($result["status"]==201)){
+            $response["content"]=$result["content"];
+        }else{
+            $response["content"]="error";
+        }
     }
 	/**
      * get Companies function
@@ -186,10 +193,12 @@ class SageClickUpService
      */
 	public function getCompanies(string $accountPractice){
         $sageModel=$this->ConnectedSageModel;
+        $response = [];
         $app_id=$sageModel->getAppId();
         $tokenAccess=$sageModel->getToken();
         $url=$this->baseUrlApi.'/applications/'.$app_id.'/accountancypractices/'.$accountPractice.'/companies';
         $result= $this->cltHttpService->execute($url,"GET",[],$tokenAccess);
+        $response["status"] =  $result["status"];
         $em=$this->em;
         $accountPracticeObj=$em->getRepository(AccountancyPractice::class)->findOneBy(["SageId"=>$accountPractice]);
         
