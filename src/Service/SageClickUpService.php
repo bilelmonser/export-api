@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Journal;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Entity\SageModel;
@@ -352,10 +353,10 @@ class SageClickUpService
      */
     public function saveCompanies(array $content,EntityManager $em,AccountancyPractice $accountancyPractice){
         $query = $em->createQuery(
-            'DELETE FROM App\Entity\Company a WHERE a.accountancyPractice = :accountancy_practice'
-         )->setParameter('accountancy_practice', $accountancyPractice)->execute();
-        if(!empty($content)){
-            foreach($content as $ind=>$val){
+            'DELETE FROM App\Entity\Company a WHERE a.accountancyPractice = :accountancy_practice_id'
+        )->setParameter('accountancy_practice_id', $accountancyPractice->getId())->execute();
+        if (!empty($content)) {
+            foreach ($content as $ind => $val) {
                 $company = new Company();
                 $company->setSageId($val["id"]);
                 $company->setBusinessId($val["businessId"]);
@@ -412,4 +413,76 @@ class SageClickUpService
         }        
     }
 
+    /**
+     * @param string $accountPractice
+     * @param $companyId
+     * @param $periodId
+     * @return mixed|string|null
+     */
+    public function getJournals(string $accountPractice, $companyId, $periodId)
+    {
+
+        $sageModel = $this->ConnectedSageModel;
+        $app_id = $sageModel->getAppId();
+        $tokenAccess = $sageModel->getToken();
+
+        $url = $this->baseUrlApi.'/applications/'.$app_id.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/journals';
+        $result = $this->cltHttpService->execute($url, "GET", [], $tokenAccess);
+
+        $company = $this->em->getRepository(Company::class)->findOneBy(["SageId" => $companyId]);
+        $period = $this->em->getRepository(FinancialPeriod::class)->findOneBy(["uuid" => $periodId]);
+
+        if (in_array($result["status"], $this->statusNotFound)) {
+            return $result["content"];
+        } else {
+
+            if (in_array($result["status"], $this->statusErrorServer)) {
+                $listLocaly = $this->em->getRepository(Journal::class)->findBy(["company" => $company,
+                    "period" => $period]);
+
+                return $this->serializer->SerializeContent($listLocaly);
+            } else {
+                $this->saveJournals(json_decode($result["content"], true), $company, $period);
+
+                return $result["content"];
+            }
+        }
+    }
+
+    /**
+     * @param array $content
+     * @param Company $company
+     * @param FinancialPeriod $period
+     */
+    public function saveJournals(array $content, Company $company, FinancialPeriod $period)
+    {
+        $this->em->createQuery(
+            'DELETE FROM App\Entity\Journal j WHERE j.company = :company and j.period = :period'
+        )->setParameter('company', $company)->setParameter('period', $period)->execute();
+
+        if (!empty($content)) {
+
+            foreach ($content as $val) {
+                $journal = new Journal();
+                $lockEndDate = \DateTime::createFromFormat('Y-m-d\TH:i:s',$val['lockEndDate']);
+                $journal->setName($val['name'])
+                    ->setShortName($val['shortName'])
+                    ->setOriginalJournalType($val['originalJournalType'])
+                    ->setNormalizedJournalType($val['normalizedJournalType'])
+                    ->setAccountingDocumentLength($val['accountingDocumentLength'])
+                    ->setBankAccount($val['bankAccount'])
+                    ->setAccountsForbidden(serialize($val['accountsForbidden']))
+                    ->setWithoutPropagationDate($val['withoutPropagationDate'])
+                    ->setWithoutPropagationReference($val['withoutPropagationReference'])
+                    ->setLockEndDate($lockEndDate)
+                    ->setUuid($val['$uuid'])
+                    ->setCompany($company)
+                    ->setPeriod($period);
+
+                $this->em->persist($journal);
+            }
+
+            $this->em->flush();
+        }
+    }
 }
