@@ -79,4 +79,22 @@ class AccountingController extends SageController
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
+
+    /**
+     * @Route("/api/sage/accounting/getJournals", name="sage_accounting_get_journals")
+     */
+    public function getJournals(Request $request)
+    {
+        $accountPractice = $request->query->get('accountPractice', '');
+        $companyId = $request->query->get('companyId', '');
+        $periodId = $request->query->get('periodId', '');
+
+        $resp = $this->getSageService()->getJournals($accountPractice, $companyId, $periodId);
+        $response = new Response();
+        $response->setContent($resp);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
 }

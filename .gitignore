@@ -27,3 +27,4 @@
 ###> PhpStorm ###
 /.idea
 ###< PhpStorm ###
+/migrations/
