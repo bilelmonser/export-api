@@ -34,4 +34,19 @@ class CompanyRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @param $accountancyPractice
+     * @return int|array|string
+     */
+    public function findCompanySageIdList($accountancyPractice)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.SageId')
+            ->andWhere('c.accountancyPractice = :accountancyPractice')
+            ->setParameter('accountancyPractice', $accountancyPractice)
+            ->getQuery()
+            ->getArrayResult()
+        ;
+    }
+
 }

@@ -2,12 +2,9 @@
 
 namespace App\Controller\Api\Sage;
 
+use App\Service\SageClickUpService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\User;
-use App\Service\SageClickUpService;
 
 class SageController extends AbstractController
 {
@@ -23,9 +20,27 @@ class SageController extends AbstractController
 	/**
 	 * get Sage Service function
 	 *
-	 * @return void
-	 */
-	public function getSageService(){
+	 * @return SageClickUpService
+     */
+	public function getSageService(): SageClickUpService
+    {
 		return $this->sageService;
 	}
+
+    /**
+     * @param $resp
+     * @return Response
+     */
+    public function createResponse($resp): Response
+    {
+
+
+//        dump($resp);
+//        die;
+
+        $response = new Response();
+        $response->setContent($resp);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
 } 

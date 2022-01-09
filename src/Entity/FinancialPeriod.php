@@ -4,11 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\FinancialPeriodRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource()
- * @ORM\Entity(repositoryClass=FinancialPeriodRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\FinancialPeriodRepository", repositoryClass=FinancialPeriodRepository::class)
  */
 class FinancialPeriod
 {
@@ -47,56 +48,56 @@ class FinancialPeriod
     /**
      * @ORM\Column(type="datetime")
      */
-    private $ExtrasFirstFinancialDate;
+    private $extrasFirstFinancialDate;
     /**
      * @ORM\Column(type="datetime")
      */
-    private $ExtrasFiscalEndOfTheFirstFiscalPeriod;
+    private $extrasFiscalEndOfTheFirstFiscalPeriod;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $ExtrasAccountLabelLength;
+    private $extrasAccountLabelLength;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $ExtrasTradingAccountLength;
+    private $extrasTradingAccountLength;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $ExtrasAccountingLineLabelLength;
+    private $extrasAccountingLineLabelLength;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $ExtrasAccountLength;
+    private $extrasAccountLength;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $ExtrasAuthorizationAlphaAccounts;
+    private $extrasAuthorizationAlphaAccounts;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $ExtrasAmountsLength;
+    private $extrasAmountsLength;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $ExtrasWithQuantities;
+    private $extrasWithQuantities;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $ExtrasWithDueDates;
+    private $extrasWithDueDates;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $ExtrasWithMultipleDueDates;
+    private $extrasWithMultipleDueDates;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -104,7 +105,7 @@ class FinancialPeriod
     private $uuid;
 
     /**
-     * @var \Company
+     * @var Company
      *
      * @ORM\ManyToOne(targetEntity="Company")
      * @ORM\JoinColumns({
@@ -113,16 +114,26 @@ class FinancialPeriod
      */
     private $company;
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getCode(): ?string
     {
         return $this->code;
     }
 
+    /**
+     * @param string $code
+     * @return $this
+     */
     public function setCode(string $code): self
     {
         $this->code = $code;
@@ -130,11 +141,18 @@ class FinancialPeriod
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFinancialPeriodName(): ?string
     {
         return $this->financialPeriodName;
     }
 
+    /**
+     * @param string $financialPeriodName
+     * @return $this
+     */
     public function setFinancialPeriodName(string $financialPeriodName): self
     {
         $this->financialPeriodName = $financialPeriodName;
@@ -142,191 +160,285 @@ class FinancialPeriod
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): self
+    /**
+     * @param DateTimeInterface $startDate
+     * @return $this
+     */
+    public function setStartDate(DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getEndDate(): ?DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeInterface $endDate): self
+    /**
+     * @param DateTimeInterface $endDate
+     * @return $this
+     */
+    public function setEndDate(DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
 
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getClosed(): ?bool
     {
         return $this->closed;
     }
 
+    /**
+     * @param bool $closed
+     * @return $this
+     */
     public function setClosed(bool $closed): self
     {
         $this->closed = $closed;
 
         return $this;
     }
-    
 
-    public function getExtrasFirstFinancialDate(): ?\DateTimeInterface
+
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getExtrasFirstFinancialDate(): ?DateTimeInterface
     {
-        return $this->ExtrasFirstFinancialDate;
+        return $this->extrasFirstFinancialDate;
     }
 
-    public function setExtrasFirstFinancialDate(\DateTimeInterface $ExtrasFirstFinancialDate): self
+    /**
+     * @param DateTimeInterface $extrasFirstFinancialDate
+     * @return $this
+     */
+    public function setExtrasFirstFinancialDate(DateTimeInterface $extrasFirstFinancialDate): self
     {
-        $this->ExtrasFirstFinancialDate = $ExtrasFirstFinancialDate;
-
-        return $this;
-    }
-    public function getExtrasFiscalEndOfTheFirstFiscalPeriod(): ?\DateTimeInterface
-    {
-        return $this->ExtrasFiscalEndOfTheFirstFiscalPeriod;
-    }
-
-    public function setExtrasFiscalEndOfTheFirstFiscalPeriod(\DateTimeInterface $ExtrasFiscalEndOfTheFirstFiscalPeriod): self
-    {
-        $this->ExtrasFiscalEndOfTheFirstFiscalPeriod = $ExtrasFiscalEndOfTheFirstFiscalPeriod;
+        $this->extrasFirstFinancialDate = $extrasFirstFinancialDate;
 
         return $this;
     }
 
-    public function getExtrasFinancialEndFirstFinancialPeriod(): ?\DateTimeInterface
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getExtrasFiscalEndOfTheFirstFiscalPeriod(): ?DateTimeInterface
     {
-        return $this->ExtrasFinancialEndFirstFinancialPeriod;
+        return $this->extrasFiscalEndOfTheFirstFiscalPeriod;
     }
 
-    public function setExtrasFiscalEndFirstFiscalPeriod(\DateTimeInterface $ExtrasFinancialEndFirstFinancialPeriod): self
+    /**
+     * @param DateTimeInterface $extrasFiscalEndOfTheFirstFiscalPeriod
+     * @return $this
+     */
+    public function setExtrasFiscalEndOfTheFirstFiscalPeriod(DateTimeInterface $extrasFiscalEndOfTheFirstFiscalPeriod): self
     {
-        $this->ExtrasFinancialEndFirstFinancialPeriod = $ExtrasFinancialEndFirstFinancialPeriod;
+        $this->extrasFiscalEndOfTheFirstFiscalPeriod = $extrasFiscalEndOfTheFirstFiscalPeriod;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getExtrasAccountLabelLength(): ?int
     {
-        return $this->ExtrasAccountLabelLength;
+        return $this->extrasAccountLabelLength;
     }
 
-    public function setExtrasAccountLabelLength(int $ExtrasAccountLabelLength): self
+    /**
+     * @param int $extrasAccountLabelLength
+     * @return $this
+     */
+    public function setExtrasAccountLabelLength(int $extrasAccountLabelLength): self
     {
-        $this->ExtrasAccountLabelLength = $ExtrasAccountLabelLength;
+        $this->extrasAccountLabelLength = $extrasAccountLabelLength;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getExtrasTradingAccountLength(): ?int
     {
-        return $this->ExtrasTradingAccountLength;
+        return $this->extrasTradingAccountLength;
     }
 
-    public function setExtrasTradingAccountLength(int $ExtrasTradingAccountLength): self
+    /**
+     * @param int $extrasTradingAccountLength
+     * @return $this
+     */
+    public function setExtrasTradingAccountLength(int $extrasTradingAccountLength): self
     {
-        $this->ExtrasTradingAccountLength = $ExtrasTradingAccountLength;
+        $this->extrasTradingAccountLength = $extrasTradingAccountLength;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getExtrasAccountingLineLabelLength(): ?int
     {
-        return $this->ExtrasAccountingLineLabelLength;
+        return $this->extrasAccountingLineLabelLength;
     }
 
-    public function setExtrasAccountingLineLabelLength(int $ExtrasAccountingLineLabelLength): self
+    /**
+     * @param int $extrasAccountingLineLabelLength
+     * @return $this
+     */
+    public function setExtrasAccountingLineLabelLength(int $extrasAccountingLineLabelLength): self
     {
-        $this->ExtrasAccountingLineLabelLength = $ExtrasAccountingLineLabelLength;
+        $this->extrasAccountingLineLabelLength = $extrasAccountingLineLabelLength;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getExtrasAccountLength(): ?int
     {
-        return $this->ExtrasAccountLength;
+        return $this->extrasAccountLength;
     }
 
-    public function setExtrasAccountLength(int $ExtrasAccountLength): self
+    /**
+     * @param int $extrasAccountLength
+     * @return $this
+     */
+    public function setExtrasAccountLength(int $extrasAccountLength): self
     {
-        $this->ExtrasAccountLength = $ExtrasAccountLength;
+        $this->extrasAccountLength = $extrasAccountLength;
 
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getExtrasAuthorizationAlphaAccounts(): ?bool
     {
-        return $this->ExtrasAuthorizationAlphaAccounts;
+        return $this->extrasAuthorizationAlphaAccounts;
     }
 
-    public function setExtrasAuthorizationAlphaAccounts(bool $ExtrasAuthorizationAlphaAccounts): self
+    /**
+     * @param bool $extrasAuthorizationAlphaAccounts
+     * @return $this
+     */
+    public function setExtrasAuthorizationAlphaAccounts(bool $extrasAuthorizationAlphaAccounts): self
     {
-        $this->ExtrasAuthorizationAlphaAccounts = $ExtrasAuthorizationAlphaAccounts;
+        $this->extrasAuthorizationAlphaAccounts = $extrasAuthorizationAlphaAccounts;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getExtrasAmountsLength(): ?int
     {
-        return $this->ExtrasAmountsLength;
+        return $this->extrasAmountsLength;
     }
 
-    public function setExtrasAmountsLength(int $ExtrasAmountsLength): self
+    /**
+     * @param int $extrasAmountsLength
+     * @return $this
+     */
+    public function setExtrasAmountsLength(int $extrasAmountsLength): self
     {
-        $this->ExtrasAmountsLength = $ExtrasAmountsLength;
+        $this->extrasAmountsLength = $extrasAmountsLength;
 
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getExtrasWithQuantities(): ?bool
     {
-        return $this->ExtrasWithQuantities;
+        return $this->extrasWithQuantities;
     }
 
-    public function setExtrasWithQuantities(bool $ExtrasWithQuantities): self
+    /**
+     * @param bool $extrasWithQuantities
+     * @return $this
+     */
+    public function setExtrasWithQuantities(bool $extrasWithQuantities): self
     {
-        $this->ExtrasWithQuantities = $ExtrasWithQuantities;
+        $this->extrasWithQuantities = $extrasWithQuantities;
 
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getExtrasWithDueDates(): ?bool
     {
-        return $this->ExtrasWithDueDates;
+        return $this->extrasWithDueDates;
     }
 
-    public function setExtrasWithDueDates(bool $ExtrasWithDueDates): self
+    /**
+     * @param bool $extrasWithDueDates
+     * @return $this
+     */
+    public function setExtrasWithDueDates(bool $extrasWithDueDates): self
     {
-        $this->ExtrasWithDueDates = $ExtrasWithDueDates;
+        $this->extrasWithDueDates = $extrasWithDueDates;
 
         return $this;
     }
 
+    /**
+     * @return bool|null
+     */
     public function getExtrasWithMultipleDueDates(): ?bool
     {
-        return $this->ExtrasWithMultipleDueDates;
+        return $this->extrasWithMultipleDueDates;
     }
 
-    public function setExtrasWithMultipleDueDates(bool $ExtrasWithMultipleDueDates): self
+    /**
+     * @param bool $extrasWithMultipleDueDates
+     * @return $this
+     */
+    public function setExtrasWithMultipleDueDates(bool $extrasWithMultipleDueDates): self
     {
-        $this->ExtrasWithMultipleDueDates = $ExtrasWithMultipleDueDates;
+        $this->extrasWithMultipleDueDates = $extrasWithMultipleDueDates;
 
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getUuid(): ?string
     {
         return $this->uuid;
     }
 
+    /**
+     * @param string $uuid
+     * @return $this
+     */
     public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
@@ -336,10 +448,10 @@ class FinancialPeriod
     /**
      * Set company
      *
-     * @param \App\Entity\Company $company
-     * @return Company
+     * @param Company|null $company
+     * @return self
      */
-    public function setCompany(\App\Entity\Company $company = null)
+    public function setCompany(Company $company = null): self
     {
         $this->company = $company;
 
@@ -349,9 +461,9 @@ class FinancialPeriod
     /**
      * Get Company
      *
-     * @return \App\Entity\Company
+     * @return Company
      */
-    public function getCompany()
+    public function getCompany(): Company
     {
         return $this->company;
     }
