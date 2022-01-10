@@ -24,8 +24,6 @@ class SageClickUpService
 
     private $em;
     private $cltHttpService;
-    private $ConnectedUser;
-    private $ConnectedSageModel;
     private $security;
     private $baseUrlApi;
     private $serializer;

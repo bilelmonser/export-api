@@ -9,6 +9,10 @@ use Exception;
 trait SageLoginTrait
 {
 
+
+    private $ConnectedUser;
+    private $ConnectedSageModel;
+
     /**
      * Login Sage ClickUp function
      *

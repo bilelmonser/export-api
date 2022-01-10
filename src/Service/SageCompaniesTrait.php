@@ -45,26 +45,43 @@ trait SageCompaniesTrait
      */
     public function saveCompanies(array $content, AccountancyPractice $accountancyPractice)
     {
-        $companySageIdList = $this->em->getRepository(Company::class)->findCompanySageIdList($accountancyPractice);
+        $allSavedCompanies = $this->em->getRepository(Company::class)->findBy(["accountancyPractice" => $accountancyPractice]);
 
-        if (!empty($content)) {
+        $allSavedCompaniesIndexedBySageId = [];
 
-            foreach ($content as $val) {
+        if (!empty($allSavedCompanies)) {
 
-                if (!in_array(["SageId" => $val["id"]], $companySageIdList)) {
-
-                    $this->em->persist(
-                        (new Company())
-                            ->setSageId($val["id"])
-                            ->setBusinessId($val["businessId"])
-                            ->setName($val["name"])
-                            ->setIsAccountancyPractice($val["isAccountancyPractice"])
-                            ->setAccountancyPractice($accountancyPractice)
-                    );
-                }
+            /** @var Company $savedCompany */
+            foreach ($allSavedCompanies as $savedCompany) {
+                $allSavedCompaniesIndexedBySageId[$savedCompany->getSageId()] = $savedCompany;
             }
-
-            $this->em->flush();
         }
+
+        foreach ($content as $val) {
+
+            if (!array_key_exists($val["id"], $allSavedCompaniesIndexedBySageId)) {
+
+                $this->em->persist(
+                    (new Company())
+                        ->setSageId($val["id"])
+                        ->setBusinessId($val["businessId"])
+                        ->setName($val["name"])
+                        ->setIsAccountancyPractice($val["isAccountancyPractice"])
+                        ->setAccountancyPractice($accountancyPractice)
+                );
+            } else {
+
+                $this->em->persist(
+                    $allSavedCompaniesIndexedBySageId[$val["id"]]
+                        ->setSageId($val["id"])
+                        ->setBusinessId($val["businessId"])
+                        ->setName($val["name"])
+                        ->setIsAccountancyPractice($val["isAccountancyPractice"])
+                        ->setAccountancyPractice($accountancyPractice)
+                );
+            }
+        }
+
+        $this->em->flush();
     }
 }

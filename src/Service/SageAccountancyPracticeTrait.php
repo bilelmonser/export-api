@@ -64,22 +64,21 @@ trait SageAccountancyPracticeTrait
         $this->em->createQuery(
             'DELETE FROM App\Entity\AccountancyPractice e WHERE e.sageModel = :id_sage_model'
         )->setParameter('id_sage_model', $user->getSageconfigs()->first())->execute();
-        if (!empty($content)) {
 
-            foreach ($content as $ind => $val) {
+        foreach ($content as $val) {
 
-                $this->em->persist(
+            $this->em->persist(
 
-                    (new AccountancyPractice())
-                        ->setSageId($val["id"])
-                        ->setBusinessId($val["businessId"])
-                        ->setName($val["name"])
-                        ->setOriginSageApplication($val["originSageApplication"])
-                        ->setContactEmail($val["contactEmail"])
-                        ->setSageModel($user->getSageconfigs()->first())
-                );
-            }
-            $this->em->flush();
+                (new AccountancyPractice())
+                    ->setSageId($val["id"])
+                    ->setBusinessId($val["businessId"])
+                    ->setName($val["name"])
+                    ->setOriginSageApplication($val["originSageApplication"])
+                    ->setContactEmail($val["contactEmail"])
+                    ->setSageModel($user->getSageconfigs()->first())
+            );
         }
+
+        $this->em->flush();
     }
 }

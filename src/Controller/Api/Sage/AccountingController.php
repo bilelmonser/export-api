@@ -110,24 +110,13 @@ class AccountingController extends SageController
      */
     public function createTradingAccount(Request $request)
     {
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
+        $accountPractice = $request->query->get('accountPractice', '');
+        $companyId = $request->query->get('companyId', '');
+        $periodId = $request->query->get('periodId', '');
 
-        $params["name"] = $request->request->get('name', '');
-        $params["shortName"] = $request->request->get('shortName', '');
-        $params["subsidiaryCollectiveAccountReference"] = $request->request->get('subsidiaryCollectiveAccountReference', '');
-        $params["underSurveillance"] = $request->request->get('underSurveillance', '');
-        $params["type"] = $request->request->get('type', '');
-        $params["\$key"] = $request->request->get('$key', '');
-        $params["extras.lettrableAccount"] = $request->request->get('extras.lettrableAccount', '');
-        $params["extras.withQuantities"] = $request->request->get('extras.withQuantities', '');
-        $params["locked"] = $request->request->get('locked', '');
-        $params["cpt1"] = $request->request->get('cpt1', '');
-        $params["cpt2"] = $request->request->get('cpt2', '');
-        $params["\$uuid"] = $request->request->get('$uuid', '');
+        $tradingAccount = json_decode($request->getContent(), true);
 
-        $resp = $this->getSageService()->createTradingAccount($accountPractice, $companyId, $periodId, $params);
+        $resp = $this->getSageService()->createTradingAccount($accountPractice, $companyId, $periodId, $tradingAccount);
 
         return $this->createResponse($resp);
 

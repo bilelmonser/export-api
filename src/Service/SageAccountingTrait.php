@@ -174,24 +174,25 @@ trait SageAccountingTrait
     /**
      * Create Entry function
      *
+     * @pararn mixed|string
      * @param string $accountPractice
      * @param string $companyId
      * @param string $periodId
-     * @param array $params
-     * @return array
+     * @param $tradingAccount
+     * @return mixed|string
      */
     public function createTradingAccount(
         string $accountPractice,
         string $companyId,
         string $periodId,
-        array $params
-    ): array {
+        $tradingAccount
+    ) {
         $sageModel = $this->ConnectedSageModel;
         $appId = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
-        $url = $this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'accounts/trading';
+        $url = $this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/accounts/trading';
 
-        $result = $this->cltHttpService->execute($url, "POST", $params, $tokenAccess, 2);
+        $result = $this->cltHttpService->execute($url, "POST", $tradingAccount, $tokenAccess, 1);
 
         if (($result["status"] == 200) || ($result["status"] == 201)) {
             $response["content"] = $result["content"];
@@ -199,7 +200,7 @@ trait SageAccountingTrait
             $response["content"] = "error";
         }
 
-        return $response;
+        return $response["content"];
     }
 
     /**

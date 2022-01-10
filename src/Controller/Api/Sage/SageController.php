@@ -34,10 +34,6 @@ class SageController extends AbstractController
     public function createResponse($resp): Response
     {
 
-
-//        dump($resp);
-//        die;
-
         $response = new Response();
         $response->setContent($resp);
         $response->headers->set('Content-Type', 'application/json');
