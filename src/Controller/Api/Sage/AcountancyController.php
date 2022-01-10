@@ -25,7 +25,7 @@ class AcountancyController extends SageController
      */
     public function getAccountancyPracticesOptions(Request $request)
     {
-		$accountPractice=( $request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') :'5a84d143-5fb1-4fce-bac0-b19ec942231c';
+		$accountPractice=( $request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') :'';
 		$resp=$this->getSageService()->getOptionAccountingPractice($accountPractice);
         $response = new Response();
         $response->setContent($resp["content"]);

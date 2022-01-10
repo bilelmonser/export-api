@@ -13,7 +13,7 @@ class CompanyController extends SageController
      * @Route("/api/sage/company/getCompanies/accountPractice/{accountPractice}", name="sage_company_get_companies")
      */
     public function getCompanies(Request $request){
-        $accountPractice=( $request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') :'5a84d143-5fb1-4fce-bac0-b19ec942231c';
+        $accountPractice=( $request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') :'';
         $resp=$this->getSageService()->getCompanies($accountPractice);
         $response = new Response();
         $response->setContent($resp);
