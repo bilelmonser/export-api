@@ -30,10 +30,9 @@ class SerializeService
      * @param array|null $context
      * @return string|null
      */
-    public function SerializeContent($data, ?string $format = 'json', ?array $context = [])
+    public function serializeContent($data, ?string $format = 'json', ?array $context = []): ?string
     {
-        $dataSerialized = $this->serializer->serialize($data, $format, $context);
-        return $dataSerialized;
+        return $this->serializer->serialize($data, $format, $context);
     }
 
     /**
