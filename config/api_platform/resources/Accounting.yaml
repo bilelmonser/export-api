@@ -42,8 +42,51 @@ App\Entity\Accounting:
             required: true
 
         responses:
-          '201':
-            description: Wallet added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_entires:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getEntries/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Entries by Company and Period.
+        description: >
+          - Get All Entries by Company and Period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
           '400':
             description: Bad request.
           '401':
@@ -69,6 +112,24 @@ App\Entity\Accounting:
           - Create a new accounting entry.
 
         parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
 
         requestBody:
           required: true

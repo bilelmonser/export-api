@@ -62,7 +62,7 @@ class ClientHttpService
             
         );
         $statusCode = $response->getStatusCode();
-        if($statusCode == 200 || $statusCode == 201){
+        if($statusCode == 200 || $statusCode == 201 ||  $statusCode == 204){
             $content = $response->getContent();
             $result["content"]=$content;
             $result["status"]=$statusCode;
