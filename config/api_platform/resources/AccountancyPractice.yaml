@@ -71,46 +71,6 @@ App\Entity\AccountancyPractice:
               type: string
             allowEmptyValue: false
             required: true
-           
-
-
-
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  walletTypeId:
-                    type: integer
-                    enum:
-                      - '9'
-                      - '10'
-                      - '13'
-                      - '14'
-                  tariffId:
-                    type: integer
-                    description: 'Wallet pricing id.'
-                  userId:
-                    type: integer
-                    description: "Wallet owner's id.."
-                  currency:
-                    type: string
-                    description: "The currency that will be used for all wallet money transactions like EUR"
-                  eventName:
-                    type: string
-                    min: 1
-                    max: 255
-                    description: 'Event name.'
-
-                example:
-                  walletTypeId: 9
-                  tariffId: 0
-                  walletStatus: "PENDING"
-                  userId: 0
-                  currency: 'EUR'
-                  eventName: 'Wallet Name'
 
         responses:
           '201':

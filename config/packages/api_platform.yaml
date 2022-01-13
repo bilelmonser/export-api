@@ -23,6 +23,9 @@ api_platform:
         jsonld: ['application/ld+json']
         html: ['text/html']
         multipart: ['multipart/form-data']
+    collection:
+        pagination:
+           enabled: false
 #    patch_formats:
 #        json: ['application/merge-patch+json']
 #    swagger:
