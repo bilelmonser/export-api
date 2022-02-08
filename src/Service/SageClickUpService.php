@@ -8,46 +8,46 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
+use App\Service\Sage\ClientHttpService;
+use App\Entity\SageModel;
 
 class SageClickUpService
 {
-
-    use SageLoginTrait;
-    use SageCompaniesTrait;
-    use SageAccountancyPracticeTrait;
-    use SageAccountingTrait;
 
     public const STATUS_NOT_FOUND = ['400', '401', '402', '403', '404', '415'];
     public const STATUS_ERROR_SERVER = ['500', '501', '503'];
     public const STATUS_NO_CONTENT = ['204'];
 
 
-    private $em;
-    private $cltHttpService;
+    protected $em;
+    protected $cltHttpService;
     private $security;
-    private $baseUrlApi;
-    private $serializer;
+    protected $baseUrlApi;
+    protected $serializer;
     private $accountancyPractice;
     protected $requestStack;
     private $log;
+    protected $ConnectedUser;
+    protected $ConnectedSageModel;
+
 
     /**
      * ClientHttpService constructor.
      * @param EntityManagerInterface $em
      * @param ClientHttpService $cltHttpService
      * @param Security $security
-     * @param SerializeService $serializeService
-     * @param $baseUrlSageApi
+     * @param SerializeService $serializeService     
      * @param RequestStack $requestStack
      * @param LoggerInterface $logger
+     * @param $baseUrlSageApi
      * @throws Exception
      */
     public function __construct(
+        $baseUrlSageApi,
         EntityManagerInterface $em,
         ClientHttpService $cltHttpService,
         Security $security,
         SerializeService $serializeService,
-        $baseUrlSageApi,
         RequestStack $requestStack,
         LoggerInterface $logger
     ) {
@@ -63,89 +63,141 @@ class SageClickUpService
             $this->loginSage();
         }
         $this->serializer = $serializeService;
-        $this->baseUrlApi = $baseUrlSageApi;
         $this->log = $logger;
-
+        $this->baseUrlApi = $baseUrlSageApi;
     }
-
     /**
-     * Create Batch function
+     * Create Entry function
      *
+     * @param string $accountPractice
+     * @param string $companyId
+     * @param string $periodId
+     * @param array $attachement
+     * @param array $entry
      * @return void
      */
-    public function createBatch()
+    public function createEntry(string $accountPractice, string $companyId, string $periodId, $attachement, $entry)
     {
         $sageModel = $this->ConnectedSageModel;
-        $app_id = $sageModel->getAppId();
+        $appId = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
-        $accountPractice = '5a84d143-5fb1-4fce-bac0-b19ec942231c';
-        $companyId = '22df8495-6357-44b2-8ea0-05272756d1da';
-        $url = $this->baseUrlApi.'/applications/{applicationId}/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/queues/in/batches';
-
-        return $this->cltHttpService->execute($url, "POST", [], $tokenAccess);
-    }
-
-    /**
-     * @param string $url
-     * @param $tokenAccess
-     * @param $savingResponseMethodName
-     * @param array $params
-     * @param $entityClass
-     * @param $repositoryMethodName
-     * @param $criteria
-     * @return mixed|string|null
-     */
-    public function saveAndGetDataByEntity(
-        string $url,
-        $tokenAccess,
-        $savingResponseMethodName,
-        array $params,
-        $entityClass,
-        $repositoryMethodName,
-        $criteria
-    ) {
-        $result = $this->cltHttpService->execute($url, "GET", [], $tokenAccess);
-
-        if (in_array($result["status"], $this::STATUS_ERROR_SERVER)) {
-
-            return $result["content"];
-        } else {
-
-            if (in_array($result["status"], $this::STATUS_NOT_FOUND) || in_array(
-                    $result["status"],
-                    $this::STATUS_NO_CONTENT
-                )) {
-
-                return $this->serializer->serializeContent(
-                    $this->em->getRepository($entityClass)->{$repositoryMethodName}($criteria)
-                );
-            } else {
-                if ($this->allNotEmpty($result["content"], ...$params)) {
-                    array_unshift($params, json_decode($result["content"], true));
-
-                    $this->{$savingResponseMethodName}(...$params);
-                }
-
-                return $result["content"];
-            }
+        $url = $this->baseUrlApi . '/applications/' . $appId . '/accountancypractices/' . $accountPractice . '/companies/' . $companyId . '/accounting/periods/' . $periodId . '/entries';
+        $response = [];
+        $params = [];
+        $params["entry"] = $entry;
+        if (isset($attachment) && !empty($attachment)) {
+            $params["attachement"] = $attachement;
         }
+        $result = $this->cltHttpService->execute($url, "POST", $params, $tokenAccess, 2);
+        if (($result["status"] == 200) || ($result["status"] == 201)) {
+            $response["content"] = $result["content"];
+        } else {
+            $response["content"] = "error";
+        }
+        return $response;
     }
 
     /**
-     * @param mixed ...$params
-     * @return bool
+     * Login Sage ClickUp function
+     *
+     * @return void
+     * @throws Exception
      */
-    public function allNotEmpty(...$params): bool
+    private function loginSage()
     {
-        foreach ($params as $param) {
-
-            if (empty($param)) {
+        $user = $this->security->getUser();
+        $sageModel = $user->getSageconfigs()->first();
+        $today = date("Y-m-d H:i:s");
+        $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
+        if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
+            $url_auth = $user->getSageconfigs()->first()->getUrlAuth();
+            $grant_type = $user->getSageconfigs()->first()->getGrantType();
+            $client_id = $user->getSageconfigs()->first()->getClientId();
+            $client_secret = $user->getSageconfigs()->first()->getClientSecret();
+            $audience = $user->getSageconfigs()->first()->getAudience();
+            $response = $this->cltHttpService->execute(
+                $url_auth,
+                "POST",
+                [
+                    "grant_type" => $grant_type,
+                    "client_id" => $client_id,
+                    "client_secret" => $client_secret,
+                    "audience" => $audience,
+                ],
+                "",
+                1
+            );
+            $response["content"] = json_decode($response["content"], true);
+            if (isset($response["content"]["access_token"])) {
+                $now = new \DateTime();
+                $now->add(new \DateInterval('PT' . $response["content"]["expires_in"] . 'S'));
+                $sageModel->setToken($response["content"]["access_token"]);
+                $sageModel->setExpiredToken($now);
+                $this->em->persist($sageModel);
+                $this->em->flush();
+            } else {
                 return false;
             }
+            $this->ConnectedUser = $this->em->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']);
+            $this->ConnectedSageModel = $this->ConnectedUser->getSageconfigs()->first();
+        } else {
+            $this->ConnectedUser = $user;
+            $this->ConnectedSageModel = $user->getSageconfigs()->first();
         }
-
-        return true;
     }
 
+    /**
+     * Login Sage ClickUp function
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function loginSageByAccountancyPractice()
+    {
+        $sageModel = $this->em->getRepository(SageModel::class)->findOneBy(
+            ['AccountancyPractice' => $this->accountancyPractice]
+        );
 
+        $today = date("Y-m-d H:i:s");
+        if (empty($sageModel)) {
+            return false;
+        }
+        $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
+
+        if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
+            $url_auth = $sageModel->getUrlAuth();
+            $grant_type = $sageModel->getGrantType();
+            $client_id = $sageModel->getClientId();
+            $client_secret = $sageModel->getClientSecret();
+            $audience = $sageModel->getAudience();
+            $response = $this->cltHttpService->execute(
+                $url_auth,
+                "POST",
+                [
+                    "grant_type" => $grant_type,
+                    "client_id" => $client_id,
+                    "client_secret" => $client_secret,
+                    "audience" => $audience,
+                ],
+                "",
+                1
+            );
+            $response["content"] = json_decode($response["content"], true);
+            if (isset($response["content"]["access_token"])) {
+                $now = new \DateTime();
+                $now->add(new \DateInterval('PT' . $response["content"]["expires_in"] . 'S'));
+                $sageModel->setToken($response["content"]["access_token"]);
+                $sageModel->setExpiredToken($now);
+                $this->em->persist($sageModel);
+                $this->em->flush();
+            } else {
+                return false;
+            }
+            $this->ConnectedSageModel = $this->em->getRepository(SageModel::class)->findOneBy(
+                ['AccountancyPractice' => $this->accountancyPractice]
+            );
+        } else {
+            $this->ConnectedSageModel = $sageModel;
+        }
+    }
 }

@@ -42,8 +42,322 @@ App\Entity\Accounting:
             required: true
 
         responses:
-          '201':
-            description: Wallet added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_entires:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getEntries/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Entries by Company and Period.
+        description: >
+          - Get All Entries by Company and Period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_afinancial_period:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getPeriod/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Entries by Company and Period.
+        description: >
+          - Get All Entries by Company and Period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_trading_account:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getTradingAccounts/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Entries by Company and Period.
+        description: >
+          - Get All Entries by Company and Period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_financial_accounts:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getFinancialAccounts/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get the list of financial accounts available for this period.
+        description: >
+          - Get the list of financial accounts available for this period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_journal:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getJournals/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get the list of journals available for this period.
+        description: >
+          - Get the list of journals available for this period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    
+    sage_accounting_get_analytical_section:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getTheAnalyticalSections/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get the analytical sections for the given period.
+        description: >
+          - Get the analytical sections for the given period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+    sage_accounting_get_company_informations:
+      denormalization_context:
+        groups: [ 'accounting:write' ]
+      method: 'GET'
+      path: /sage/accounting/getCompanyInformation/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      controller: AccountingController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get the company information for the given period.
+        description: >
+          - Get the company information for the given period.
+
+          - Mandatory parameters  :
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        responses:
           '400':
             description: Bad request.
           '401':
@@ -69,30 +383,40 @@ App\Entity\Accounting:
           - Create a new accounting entry.
 
         parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
 
         requestBody:
           required: true
           content:
             application/json:
               schema:
-                type: object
+                type: multipart/form-data
                 properties:
-                  country:
-                    type: string
-                    min: 2
-                    max: 3
-                    description: country of the resident.
+                  attachment:
+                    type: file
+                    description: attachment file.
 
-                  taxPayerId:
+                  entry:
                     type: string
                     max: 255
-                    description: Tax payer's id.
-
-                  liabilityWaiver:
-                    type: boolean
-                    default: true
-                    description: When there is no taxPayerId for a residence, this field shall be set to true.
-
+                    description: Tax payer's id.  
                 example:
                   country: 'TU'
                   taxPayerId: 'xxxxxxxxxxxxxxxx'
@@ -118,4 +442,81 @@ App\Entity\Accounting:
 
       openapi_context:
         summary: hidden
-    
+    sage_accounting_create_trading_account:
+          denormalization_context:
+            groups: [ 'tax:write' ]
+          method: 'POST'
+          path: /sage/accounting/createTradingAccount/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+          requirements:
+            id: \d+
+          controller: TaxResidenceController::class
+          read: [ 'false' ]
+          output: [ 'true' ]
+
+          openapi_context:
+            security:
+              - bearerAuth:
+            summary: create a new trading account for the given period.
+            description: >
+              - create a new trading account for the given period.
+
+            parameters:
+              - in: path
+                name: accountPractice
+                schema:
+                  type: string
+                allowEmptyValue: false
+                required: true
+              - in: path
+                name: companyId
+                schema:
+                  type: string
+                allowEmptyValue: false
+                required: true
+              - in: path
+                name: periodId
+                schema:
+                  type: string
+                allowEmptyValue: false
+                required: true
+
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    type: multipart/form-data
+                    properties:
+                      attachment:
+                        type: file
+                        description: attachment file.
+
+                      entry:
+                        type: string
+                        max: 255
+                        description: Tax payer's id.  
+                    example:
+                      country: 'TU'
+                      taxPayerId: 'xxxxxxxxxxxxxxxx'
+                      liabilityWaiver: 1
+
+            responses:
+              '201':
+                description: TaxResidence created successfully.
+              '400':
+                description: Bad request.
+              '401':
+                description: JWT Token not found.
+              '406':
+                description: Tax Residence Id all ready in use .
+              '422':
+                description: UserCsb not found.
+              '5XX':
+                description: Unexpected error.
+          itemOperations:
+            get:
+              normalization_context:
+                groups: [ 'kyb:read','kyc:read' ]
+
+              openapi_context:
+                summary: hidden
