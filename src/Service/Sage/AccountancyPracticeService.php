@@ -16,7 +16,7 @@ class AccountancyPracticeService extends SageClickUpService
      *
      * @return void
      */
-    public function getAccountingPractices(string $odataStr = "")
+    public function getAccountingPractices(string $odataStr = "", ?User $user)
     {
 
         $sageModel = $this->ConnectedSageModel;
@@ -42,7 +42,7 @@ class AccountancyPracticeService extends SageClickUpService
                     $this->em->getRepository(AccountancyPractice::class)->findBySageModelAll($sageModel)
                 );
             } else {
-                $this->saveAccountancyPracticesDb(json_decode($result["content"], true));
+                $this->saveAccountancyPracticesDb(json_decode($result["content"], true), $user);
                 $response["content"] = $result["content"];
             }
         }
@@ -67,15 +67,11 @@ class AccountancyPracticeService extends SageClickUpService
     }
 
     /**
-     * Save Accountancy Practices function
-     *
      * @param array $content
-     * @param User $user
-     * @return void
+     * @param User|null $user
      */
-    public function saveAccountancyPracticesDb($content)
+    public function saveAccountancyPracticesDb(array $content, ?User $user)
     {
-        $user = $this->ConnectedUser;
         $accountancyPractices = $this->em->getRepository(AccountancyPractice::class)->findBy(["sageModel" => $user->getSageconfigs()->first()]);
         foreach ($content as $val) {
             $existId = false;

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
-  * @Table(schema="public")
+  * @Table()
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

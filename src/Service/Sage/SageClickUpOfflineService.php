@@ -4,7 +4,7 @@ namespace App\Service\Sage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\SageModel;
-use App\Service\ClientHttpService;
+use App\Service\Sage\ClientHttpService;
 use Symfony\Component\Security\Core\Security;
 
 class SageClickUpOfflineService
@@ -13,6 +13,11 @@ class SageClickUpOfflineService
     private $cltHttpService;
     private $security;
 
+    /**
+     * @param EntityManagerInterface $em
+     * @param \App\Service\Sage\ClientHttpService $cltHttpService
+     * @param Security $security
+     */
     public function __construct(EntityManagerInterface $em, ClientHttpService $cltHttpService, Security $security)
     {
         $this->em = $em;
