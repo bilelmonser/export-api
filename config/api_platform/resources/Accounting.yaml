@@ -48,6 +48,7 @@ App\Entity\Accounting:
             description: JWT Token not found.
           '5XX':
             description: Unexpected error.
+
     sage_accounting_get_entires:
       denormalization_context:
         groups: [ 'accounting:write' ]
@@ -403,24 +404,101 @@ App\Entity\Accounting:
             required: true
 
         requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  attachment:
+                    type: string
+                    required: false
+                    allowEmptyValue: false
+                    description: attachment.
+                  entry:
+                    type: json
+                    required: false
+                    allowEmptyValue: false
+                    description: entry.
+                example:
+                  attachment: 'path to file'
+                  entry: '{"lines": [{"financialAccountJournalReference": "AC","accountReferenceForJournal": "45510000","tradingAccountReference": "45510000","date": "2021-01-06T00:00:00","description": "test facnote credit","debit": 0.0,"credit": 7.19,"currency": "EUR","originalDocumentReference": "202001_2397795","letteringReference": "","$updated": "2021-12-31T00:00:00","dueDate": null, "dueDates": null, "quantity": null, "internalId": 536870916, "anInternalId": null, "analyticalSections": null, "$uuid": "a0199c07-25b3-4f0f-9427-6ebb5379da70" }, { "financialAccountJournalReference": "AC", "accountReferenceForJournal": "60640000", "tradingAccountReference": "60640000", "date": "2021-01-06T00:00:00", "description": "facnote test debit 1", "debit": 5.99, "credit": 0.0, "currency": "EUR", "originalDocumentReference": "202001_2397795", "letteringReference": "", "$updated": "2120-12-31T00:00:00", "dueDate": null, "dueDates": null, "quantity": null, "internalId": 536870917, "anInternalId": null, "analyticalSections": null, "$uuid": "f652a348-d3b2-45f8-8367-a08ca63fa3fe" }, { "financialAccountJournalReference": "AC", "accountReferenceForJournal": "44566000", "tradingAccountReference": "44566000", "date": "2021-01-06T00:00:00", "description": "facnote test debit 2", "debit": 1.2, "credit": 0.0, "currency": "EUR", "originalDocumentReference": "202001_2397795", "letteringReference": "", "$updated": "2021-12-31T00:00:00", "dueDate": null, "dueDates": null, "quantity": null, "internalId": 536870918, "anInternalId": 536879786, "analyticalSections": null, "$uuid": "e0010219-18ec-41a2-bd53-c10e6138985c" } ]}'
+
+        responses:
+          '201':
+            description: Entry created successfully.
+          '400':
+            description: Check the response message for more details.
+          '401':
+            description: Unauthorized.
+          '403':
+            description: Forbidden .
+          '404':
+            description: Check the response message for more details .
+          '5XX':
+            description: Unexpected error.
+
+    sage_accounting_create_trading_account:
+      denormalization_context:
+        groups: [ 'tax:write' ]
+      method: 'POST'
+      path: /sage/accounting/createTradingAccount/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
+      requirements:
+        id: \d+
+      controller: TaxResidenceController::class
+      read: [ 'false' ]
+      output: [ 'true' ]
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: create a new trading account for the given period.
+        description: >
+          - create a new trading account for the given period.
+
+        parameters:
+          - in: path
+            name: accountPractice
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: companyId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+          - in: path
+            name: periodId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
+
+        requestBody:
           required: true
           content:
             application/json:
               schema:
                 type: multipart/form-data
                 properties:
-                  attachment:
+                  shortName:
                     type: file
-                    description: attachment file.
+                    description: shortName.
 
-                  entry:
+                  subsidiaryCollectiveAccountReference:
                     type: string
                     max: 255
-                    description: Tax payer's id.  
+                    description: subsidiaryCollectiveAccountReference.
+                  name:
+                    type: string
+                    max: 255
+                    description: name.
                 example:
-                  country: 'TU'
-                  taxPayerId: 'xxxxxxxxxxxxxxxx'
-                  liabilityWaiver: 1
+                  shortName: "C00000"
+                  subsidiaryCollectiveAccountReference: "40100000"
+                  name: "CLIENT 0pp"
 
         responses:
           '201':
@@ -435,6 +513,13 @@ App\Entity\Accounting:
             description: UserCsb not found.
           '5XX':
             description: Unexpected error.
+      itemOperations:
+        get:
+          normalization_context:
+            groups: [ 'kyb:read','kyc:read' ]
+
+          openapi_context:
+            summary: hidden
   itemOperations:
     get:
       normalization_context:
@@ -442,81 +527,3 @@ App\Entity\Accounting:
 
       openapi_context:
         summary: hidden
-    sage_accounting_create_trading_account:
-          denormalization_context:
-            groups: [ 'tax:write' ]
-          method: 'POST'
-          path: /sage/accounting/createTradingAccount/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}
-          requirements:
-            id: \d+
-          controller: TaxResidenceController::class
-          read: [ 'false' ]
-          output: [ 'true' ]
-
-          openapi_context:
-            security:
-              - bearerAuth:
-            summary: create a new trading account for the given period.
-            description: >
-              - create a new trading account for the given period.
-
-            parameters:
-              - in: path
-                name: accountPractice
-                schema:
-                  type: string
-                allowEmptyValue: false
-                required: true
-              - in: path
-                name: companyId
-                schema:
-                  type: string
-                allowEmptyValue: false
-                required: true
-              - in: path
-                name: periodId
-                schema:
-                  type: string
-                allowEmptyValue: false
-                required: true
-
-            requestBody:
-              required: true
-              content:
-                application/json:
-                  schema:
-                    type: multipart/form-data
-                    properties:
-                      attachment:
-                        type: file
-                        description: attachment file.
-
-                      entry:
-                        type: string
-                        max: 255
-                        description: Tax payer's id.  
-                    example:
-                      country: 'TU'
-                      taxPayerId: 'xxxxxxxxxxxxxxxx'
-                      liabilityWaiver: 1
-
-            responses:
-              '201':
-                description: TaxResidence created successfully.
-              '400':
-                description: Bad request.
-              '401':
-                description: JWT Token not found.
-              '406':
-                description: Tax Residence Id all ready in use .
-              '422':
-                description: UserCsb not found.
-              '5XX':
-                description: Unexpected error.
-          itemOperations:
-            get:
-              normalization_context:
-                groups: [ 'kyb:read','kyc:read' ]
-
-              openapi_context:
-                summary: hidden
