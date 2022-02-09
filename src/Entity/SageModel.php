@@ -181,4 +181,42 @@ class SageModel
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getAudiance(): string
+    {
+        return $this->audiance;
+    }
+
+    /**
+     * @param string $audiance
+     * @return SageModel
+     */
+    public function setAudiance(string $audiance): SageModel
+    {
+        $this->audiance = $audiance;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getIdUser(): User
+    {
+        return $this->idUser;
+    }
+
+    /**
+     * @param User $idUser
+     * @return SageModel
+     */
+    public function setIdUser(User $idUser): SageModel
+    {
+        $this->idUser = $idUser;
+
+        return $this;
+    }
 }

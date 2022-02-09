@@ -36,7 +36,7 @@ class SageClickUpService
      * @param EntityManagerInterface $em
      * @param ClientHttpService $cltHttpService
      * @param Security $security
-     * @param SerializeService $serializeService     
+     * @param SerializeService $serializeService
      * @param RequestStack $requestStack
      * @param LoggerInterface $logger
      * @param $baseUrlSageApi
@@ -66,6 +66,7 @@ class SageClickUpService
         $this->log = $logger;
         $this->baseUrlApi = $baseUrlSageApi;
     }
+
     /**
      * Create Entry function
      *
@@ -81,7 +82,7 @@ class SageClickUpService
         $sageModel = $this->ConnectedSageModel;
         $appId = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
-        $url = $this->baseUrlApi . '/applications/' . $appId . '/accountancypractices/' . $accountPractice . '/companies/' . $companyId . '/accounting/periods/' . $periodId . '/entries';
+        $url = $this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/entries';
         $response = [];
         $params = [];
         $params["entry"] = $entry;
@@ -94,9 +95,20 @@ class SageClickUpService
         } else {
             $response["content"] = "error";
         }
+
         return $response;
     }
 
+    public function getSageModel(){
+        $user = $this->security->getUser();
+        $sageModels = $user->getSageconfigs();
+        foreach ($sageModels as $sageModel){
+            $this->ConnectedUser = $user;
+            $this->ConnectedSageModel = $sageModel;
+            break;
+        }
+
+    }
     /**
      * Login Sage ClickUp function
      *
@@ -106,43 +118,51 @@ class SageClickUpService
     private function loginSage()
     {
         $user = $this->security->getUser();
-        $sageModel = $user->getSageconfigs()->first();
+        $sageModels = $user->getSageconfigs();
         $today = date("Y-m-d H:i:s");
-        $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
-        if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
-            $url_auth = $user->getSageconfigs()->first()->getUrlAuth();
-            $grant_type = $user->getSageconfigs()->first()->getGrantType();
-            $client_id = $user->getSageconfigs()->first()->getClientId();
-            $client_secret = $user->getSageconfigs()->first()->getClientSecret();
-            $audience = $user->getSageconfigs()->first()->getAudience();
-            $response = $this->cltHttpService->execute(
-                $url_auth,
-                "POST",
-                [
-                    "grant_type" => $grant_type,
-                    "client_id" => $client_id,
-                    "client_secret" => $client_secret,
-                    "audience" => $audience,
-                ],
-                "",
-                1
-            );
-            $response["content"] = json_decode($response["content"], true);
-            if (isset($response["content"]["access_token"])) {
-                $now = new \DateTime();
-                $now->add(new \DateInterval('PT' . $response["content"]["expires_in"] . 'S'));
-                $sageModel->setToken($response["content"]["access_token"]);
-                $sageModel->setExpiredToken($now);
-                $this->em->persist($sageModel);
-                $this->em->flush();
-            } else {
-                return false;
+        foreach ($sageModels as $sageModel) {
+            if($sageModel->getExpiredtoken()){
+                $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s') ;
+            }else{
+                $dateExpiredDt = new \DateTime();
+                $dateExpiredDt->modify("+10 days");
+                $dateExpired = $dateExpiredDt->format('Y-m-d H:i:s');
             }
-            $this->ConnectedUser = $this->em->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']);
-            $this->ConnectedSageModel = $this->ConnectedUser->getSageconfigs()->first();
-        } else {
+            if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
+                $url_auth = $sageModel->getUrlAuth();
+                $grant_type = $sageModel->getGrantType();
+                $client_id = $sageModel->getClientId();
+                $client_secret = $sageModel->getClientSecret();
+                $audience = $sageModel->getAudience();
+                $response = $this->cltHttpService->execute(
+                    $url_auth,
+                    "POST",
+                    [
+                        "grant_type" => $grant_type,
+                        "client_id" => $client_id,
+                        "client_secret" => $client_secret,
+                        "audience" => $audience,
+                    ],
+                    "",
+                    1
+                );
+                $response["content"] = json_decode($response["content"], true);
+                if (isset($response["content"]["access_token"])) {
+                    $now = new \DateTime();
+                    $now->add(new \DateInterval('PT'.$response["content"]["expires_in"].'S'));
+                    $sageModel->setToken($response["content"]["access_token"]);
+                    $sageModel->setExpiredToken($now);
+                    $this->em->persist($sageModel);
+                    $this->em->flush();
+                } else {
+                    return false;
+                }
+                $this->ConnectedUser = $this->em->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']
+                );
+            }
             $this->ConnectedUser = $user;
-            $this->ConnectedSageModel = $user->getSageconfigs()->first();
+            $this->ConnectedSageModel = $sageModel;
+            break;
         }
     }
 
@@ -185,7 +205,7 @@ class SageClickUpService
             $response["content"] = json_decode($response["content"], true);
             if (isset($response["content"]["access_token"])) {
                 $now = new \DateTime();
-                $now->add(new \DateInterval('PT' . $response["content"]["expires_in"] . 'S'));
+                $now->add(new \DateInterval('PT'.$response["content"]["expires_in"].'S'));
                 $sageModel->setToken($response["content"]["access_token"]);
                 $sageModel->setExpiredToken($now);
                 $this->em->persist($sageModel);

@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|SageModel[]
+     * @return Collection
      */
     public function getSageconfigs(): Collection
     {

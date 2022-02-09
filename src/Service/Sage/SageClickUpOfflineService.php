@@ -2,6 +2,7 @@
 
 namespace App\Service\Sage;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\SageModel;
 use App\Service\Sage\ClientHttpService;
@@ -33,23 +34,19 @@ class SageClickUpOfflineService
      */
     public function checkAccountingPractices($params)
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
         $sageModel = $this->em->getRepository(SageModel::class)->findOneBy(['AccountancyPractice' => $params["accountancyPractices"]]);
-        if (!empty($sageModel)) {
-            $sageModel->setAccountancyPractice($params["accountancyPractices"]);
-            $sageModel->setAppId($params["appId"]);
-            $sageModel->setClientId($params["clientId"]);
-            $sageModel->setClientSecret($params["clientSecret"]);
-            $this->em->persist($sageModel);
-            $this->em->flush();
-        } else {
+        if (null === $sageModel) {
             $sageModel = new SageModel();
-            $sageModel->setAccountancyPractice($params["accountancyPractices"]);
-            $sageModel->setAppId($params["appId"]);
-            $sageModel->setClientId($params["clientId"]);
-            $sageModel->setClientSecret($params["clientSecret"]);
-            $this->em->persist($sageModel);
-            $this->em->flush();
         }
+        $sageModel->setIdUser($user);
+        $sageModel->setAccountancyPractice($params["accountancyPractices"]);
+        $sageModel->setAppId($params["appId"]);
+        $sageModel->setClientId($params["clientId"]);
+        $sageModel->setClientSecret($params["clientSecret"]);
+        $this->em->persist($sageModel);
+        $this->em->flush();
         $result = [];
         $result["status"] = 200;
         $result["content"] = "parameters updated";

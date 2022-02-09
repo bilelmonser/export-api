@@ -81,6 +81,68 @@ App\Entity\AccountancyPractice:
             description: JWT Token not found.
           '5XX':
             description: Unexpected error.
+
+    sage_accountancy_practices_check:
+      denormalization_context:
+        groups: [ 'accountancyPractice:write' ]
+      method: 'POST'
+      path: /sage/accountancy/check
+      controller: UserController::class
+      read: ['false']
+      output: ['true']
+
+      openapi_context:
+        security:
+          - bearerAuth:
+        summary: Get All Accountancy Practice checked Data.
+        description: >
+          - With this endpoint you can get All Sage Data
+
+
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountancyPractices:
+                      type: string
+                      required: false
+                      allowEmptyValue: false
+                      description: accountancyPractices.
+                  appId:
+                      type: string
+                      required: false
+                      allowEmptyValue: false
+                      description: appId.
+                  clientId:
+                      type: string
+                      required: false
+                      allowEmptyValue: false
+                      description: clientId.
+                  clientSecret:
+                      type: string
+                      required: false
+                      allowEmptyValue: false
+                      description: clientSecret.
+
+                example:
+                  accountancyPractices: '5a84d143-5fb1-4fce-bac0-b19ec942231c'
+                  appId: 'e2e2cb34-6295-4417-9823-a9b95125cf22'
+                  clientId: 'JyFVv1mfKhd4LeSBmRuEnV7Y8PxQDaMO'
+                  clientSecret: 'qKSfNFgt8tXVc6qbWN8CBfTPGo_PUcO9MGwGC_BB0FrwbsJoGogktpB0rlphpVwG'
+
+        responses:
+          '200':
+            description: Data added successfully.
+          '400':
+            description: Bad request.
+          '401':
+            description: JWT Token not found.
+          '5XX':
+            description: Unexpected error.
+
   itemOperations:
     get:
       normalization_context:
