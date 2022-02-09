@@ -39,7 +39,7 @@ class AcountancyController extends SageController
                 $i++;
             }
         }        
-        $resp = $this->sageService->getAccountingPractices($odataStr);
+        $resp = $this->sageService->getAccountingPractices($odataStr, $this->getUser());
         return $this->createResponse($resp);
     }
     /**

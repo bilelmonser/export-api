@@ -8,12 +8,12 @@ use Symfony\Compenent\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
-use App\Service\Sage\SageClickUpService;
+use App\Service\Sage\ClickUpService;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UserRepository;
-use App\Service\SageClickUpOfflineService;
+use App\Service\Sage\SageClickUpOfflineService;
 
 class UserController extends AbstractController
 {
