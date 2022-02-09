@@ -3,6 +3,7 @@
 namespace App\Controller\Api\Sage;
 
 use App\Service\FileUploader;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,6 +12,7 @@ use App\Service\Sage\AccountingService;
 class AccountingController extends SageController
 {
     private $sageService;
+
     /**
      * construct function
      *
@@ -26,22 +28,23 @@ class AccountingController extends SageController
      */
     public function getPeriods(Request $request)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
+        }
         $accountPractice = $request->attributes->get('accountPractice', '');
         $companyId = $request->attributes->get('companyId', '');
-        $resp = $this->sageService->getPeriods($accountPractice, $companyId,$odataStr);
+        $resp = $this->sageService->getPeriods($accountPractice, $companyId, $odataStr);
+
         return $this->createResponse($resp);
     }
 
@@ -50,37 +53,37 @@ class AccountingController extends SageController
      */
     public function getTradingAccounts(Request $request)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
+        }
         $accountPractice = $request->attributes->get('accountPractice', '');
         $companyId = $request->attributes->get('companyId', '');
         $periodId = $request->attributes->get('periodId');
-        $resp = $this->sageService->getTradingAccounts($accountPractice, $companyId, $periodId,$odataStr);
+        $resp = $this->sageService->getTradingAccounts($accountPractice, $companyId, $periodId, $odataStr);
+
         return $this->createResponse($resp);
     }
 
     /**
      * @Route("/api/sage/accounting/createEntry/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}", name="sage_accounting_create_entry")
      */
-    public function createEntry(Request $request, FileUploader $fileUploader)
+    public function createEntry(Request $request,$accountPractice, $companyId, $periodId,  FileUploader $fileUploader)
     {
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
-        $attachement = $request->files->get('attachment');
-        $entry = $request->request->get('entry');
-        if ($attachement) {
+        $data = json_decode($request->getContent(),true);
+        $attachement = $data['attachment'];
+        $entry = $data['entry'];
+
+        if ($attachement instanceof UploadedFile && in_array($attachement->getClientOriginalExtension(),["pdf","jpg","tif"])) {
             $statusUploadFile = $fileUploader->upload($attachement);
             if ($statusUploadFile === false) {
                 $response = new Response();
@@ -90,7 +93,7 @@ class AccountingController extends SageController
 
                 return $response;
             }
-            $attachement = $this->getParameter("baseUrlApi") . "/" . $statusUploadFile;
+            $attachement = $this->getParameter("baseUrlApi")."/".$statusUploadFile;
         }
 
         $resp = $this->sageService->createEntry($accountPractice, $companyId, $periodId, $attachement, $entry);
@@ -103,23 +106,24 @@ class AccountingController extends SageController
      */
     public function getEntries(Request $request)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
+        }
         $accountPractice = $request->attributes->get('accountPractice', '');
         $companyId = $request->attributes->get('companyId', '');
         $periodId = $request->attributes->get('periodId', '');
-        $resp = $this->sageService->getEntries($accountPractice, $companyId, $periodId,$odataStr);
+        $resp = $this->sageService->getEntries($accountPractice, $companyId, $periodId, $odataStr);
+
         return $this->createResponse($resp);
     }
 
@@ -128,24 +132,24 @@ class AccountingController extends SageController
      */
     public function getJournals(Request $request)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
+        }
         $accountPractice = $request->attributes->get('accountPractice', '');
         $companyId = $request->attributes->get('companyId', '');
         $periodId = $request->attributes->get('periodId', '');
 
-        $resp = $this->sageService->getJournals($accountPractice, $companyId, $periodId,$odataStr);
+        $resp = $this->sageService->getJournals($accountPractice, $companyId, $periodId, $odataStr);
 
         return $this->createResponse($resp);
     }
@@ -168,76 +172,67 @@ class AccountingController extends SageController
     /**
      * @Route("/api/sage/accounting/createTradingAccount/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}", name="sage_accounting_create_trading_account")
      */
-    public function createTradingAccount(Request $request)
+    public function createTradingAccount(Request $request,$accountPractice, $companyId, $periodId)
     {
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
         $tradingAccount = json_decode($request->getContent(), true);
         $resp = $this->sageService->createTradingAccount($accountPractice, $companyId, $periodId, $tradingAccount);
+
         return $this->createResponse($resp);
     }
 
     /**
      * @Route("/api/sage/accounting/getFinancialAccounts/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}", name="sage_accounting_get_financial_accounts")
      */
-    public function getFinancialAccounts(Request $request)
+    public function getFinancialAccounts(Request $request, $accountPractice, $companyId, $periodId)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
-        $resp = $this->sageService->getFinancialAccounts($accountPractice, $companyId, $periodId,$odataStr);
+        }
+
+        $resp = $this->sageService->getFinancialAccounts($accountPractice, $companyId, $periodId, $odataStr);
+
         return $this->createResponse($resp);
     }
 
     /**
      * @Route("/api/sage/accounting/getCompanyInformation/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}", name="sage_accounting_get_company_information")
      */
-    public function getCompanyInformation(Request $request)
+    public function getCompanyInformation(Request $request,$accountPractice, $companyId, $periodId)
     {
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
         $resp = $this->sageService->getCompanyInformation($accountPractice, $companyId, $periodId);
-        return $this->createResponse($resp);
+        return $this->json($resp["content"],$resp["status"]);
     }
 
     /**
      * @Route("/api/sage/accounting/getTheAnalyticalSections/accountPractice/{accountPractice}/companyId/{companyId}/periodId/{periodId}", name="sage_accounting_get_the_analytical_sections")
      */
-    public function getTheAnalyticalSections(Request $request)
+    public function getTheAnalyticalSections(Request $request, $accountPractice, $companyId, $periodId)
     {
-        $odataParams=$request->query->all();
-        $odataStr="";
-        if(!empty($odataParams)){
-            $odataStr="?";
-            $i=0;
-            foreach($odataParams as $ind=>$val){
-                if($i != 0){
+        $odataParams = $request->query->all();
+        $odataStr = "";
+        if (!empty($odataParams)) {
+            $odataStr = "?";
+            $i = 0;
+            foreach ($odataParams as $ind => $val) {
+                if ($i != 0) {
                     $odataStr .= "&";
                 }
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        } 
-        $accountPractice = $request->attributes->get('accountPractice', '');
-        $companyId = $request->attributes->get('companyId', '');
-        $periodId = $request->attributes->get('periodId', '');
+        }
 
-        $resp = $this->sageService->getTheAnalyticalSections($accountPractice, $companyId, $periodId,$odataStr);
+        $resp = $this->sageService->getTheAnalyticalSections($accountPractice, $companyId, $periodId, $odataStr);
 
         return $this->createResponse($resp);
     }

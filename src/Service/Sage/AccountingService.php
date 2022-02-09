@@ -304,7 +304,11 @@ class AccountingService extends SageClickUpService
                     $this->em->getRepository(FinancialAccount::class)->findBy(["company" => $company, "period" => $period])
                 );
             } else {
-                if (!empty(json_decode($result["content"], true)) && !empty($company) && !empty($perido)) {
+
+                if (!count(json_decode($result["content"], true))
+                    && $company
+                    && $period
+                ) {
                     $this->saveFinancialAccounts(json_decode($result["content"], true), $company, $period);
                 }
                 $response["content"] = $result["content"];
@@ -320,9 +324,6 @@ class AccountingService extends SageClickUpService
      */
     public function saveFinancialAccounts(array $content, Company $company, FinancialPeriod $period)
     {
-        $this->em->createQuery(
-            'DELETE FROM App\Entity\FinancialAccount fa WHERE fa.company = :company and fa.period = :period'
-        )->setParameter('company', $company)->setParameter('period', $period)->execute();
 
         foreach ($content as $val) {
 
@@ -473,6 +474,7 @@ class AccountingService extends SageClickUpService
         $attachement,
         $entry
     ) {
+
         $sageModel = $this->ConnectedSageModel;
         $appId = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
@@ -502,7 +504,7 @@ class AccountingService extends SageClickUpService
      */
     public function getCompanyInformation(string $accountPractice, $companyId, $periodId)
     {
-
+        $this->getSageModel();
         $sageModel = $this->ConnectedSageModel;
         $app_id = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
