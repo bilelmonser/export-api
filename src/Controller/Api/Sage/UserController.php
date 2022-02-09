@@ -2,9 +2,10 @@
 
 namespace App\Controller\Api\Sage;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Compenent\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
@@ -17,7 +18,11 @@ use App\Service\Sage\SageClickUpOfflineService;
 
 class UserController extends AbstractController
 {
+    /**
+     * @var
+     */
     private $sageService;
+
     public function __contruct()
     {
     }
@@ -63,44 +68,23 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/sage/accountancy/check", name="sage_accountancy_practices_check")
+     * @Route("/api/sage/accountancy/check", name="sage_accountancy_practices_check", methods={"POST"})
      */
-    public function checkAccountancyPractices(Request $request, SageClickUpOfflineService $sageServiceOffline)
+    public function checkAccountancyPractices(Request $request, SageClickUpOfflineService $sageServiceOffline): JsonResponse
     {
-        $params = [];
-        $error = false;
-        if (($request->request->get('accountancyPractices') !== null) && !empty($request->request->get('accountancyPractices'))) {
-            $params["accountancyPractices"] = $request->request->get('accountancyPractices');
-        } else {
-            $error = true;
-        }
-        if (($request->request->get('appId') !== null) && !empty($request->request->get('appId'))) {
-            $params["appId"] = $request->request->get('appId');
-        } else {
-            $error = true;
-        }
-        if (($request->request->get('clientId') !== null) && !empty($request->request->get('clientId'))) {
-            $params["clientId"] = $request->request->get('clientId');
-        } else {
-            $error = true;
-        }
-        if (($request->request->get('clientSecret') !== null) && !empty($request->request->get('clientSecret'))) {
-            $params["clientSecret"] = $request->request->get('clientSecret');
-        } else {
-            $error = true;
-        }
-        $response = new Response();
-        $resp = "";
-        if ($error) {
-            $response->setStatusCode(400);
-            $resp = "";
-        } else {
-            $response->setStatusCode(200);
+        try {
+            $data =  $request->getContent();
+            if(null === $data){
+                return $this->json(["error"=>"pas de contenu à traité"],Response::HTTP_BAD_REQUEST);
+            }
+            $params = json_decode($data,true);
+            if(!count($params)){
+                return $this->json(["error"=>"pas de contenu à traité"],Response::HTTP_BAD_REQUEST);
+            }
             $resp = $sageServiceOffline->checkAccountingPractices($params);
-            $resp = $resp["content"];
+            return $this->json($resp["content"]);
+        } catch (Exception $e) {
+            return $this->json(["error"=>$e->getMessage()],Response::HTTP_BAD_REQUEST);
         }
-        $response->setContent($resp);
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
     }
 }

@@ -2,23 +2,48 @@
 
 namespace App\Service\Sage;
 
+use App\Service\App\SerializeService;
 use App\Service\SageClickUpService;
 use App\Entity\AccountancyPractice;
 use App\Entity\AnalyticalSection;
 use App\Entity\SageModel;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Security;
 
 class AccountancyPracticeService extends SageClickUpService
 {
+    public function __construct(
+        $baseUrlSageApi,
+        EntityManagerInterface $em,
+        ClientHttpService $cltHttpService,
+        Security $security,
+        SerializeService $serializeService,
+        RequestStack $requestStack,
+        LoggerInterface $logger
+    ) {
+        parent::__construct(
+            $baseUrlSageApi,
+            $em,
+            $cltHttpService,
+            $security,
+            $serializeService,
+            $requestStack,
+            $logger
+        );
+    }
+
     /**
      * get Accounting Practices function
      *
      * @return void
      */
-    public function getAccountingPractices(string $odataStr = "", ?User $user)
+    public function getAccountingPractices(string $odataStr = "", ?User $user= null) : array
     {
-
+        $this->getSageModel();
         $sageModel = $this->ConnectedSageModel;
         $app_id = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
