@@ -434,9 +434,9 @@ class AccountingService extends SageClickUpService
      * @param string $companyId
      * @param string $periodId
      * @param string $odataStr
-     * @return void
+     * @return array
      */
-    public function getEntries(string $accountPractice, string $companyId, string $periodId, string $odataStr = "")
+    public function getEntries(string $accountPractice, string $companyId, string $periodId, string $odataStr = ""): array
     {
         $sageModel = $this->ConnectedSageModel;
         $response = [];
@@ -448,6 +448,7 @@ class AccountingService extends SageClickUpService
         }
         $result = $this->cltHttpService->execute($url, "GET", [], $tokenAccess);
         $response["status"] = $result["status"];
+
         if (($result["status"] == 200) || ($result["status"] == 201)) {
             $response["content"] = $result["content"];
         } else {
@@ -465,34 +466,30 @@ class AccountingService extends SageClickUpService
      * @param string $periodId
      * @param $attachement
      * @param $entry
-     * @return mixed|string
+     * @return array
      */
-    public function createEntry(
-        string $accountPractice,
-        string $companyId,
-        string $periodId,
-        $attachement,
-        $entry
-    ) {
-
+    public function createEntry(string $accountPractice, string $companyId, string $periodId, $attachement, $entry): array
+    {
         $sageModel = $this->ConnectedSageModel;
         $appId = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
-        $url = $this->baseUrlApi . '/applications/' . $appId . '/accountancypractices/' . $accountPractice . '/companies/' . $companyId . '/accounting/periods/' . $periodId . '/entries';
+        $url = $this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/entries';
         $response = [];
         $params = [];
         $params["entry"] = $entry;
-        if (isset($attachment) && !empty($attachment)) {
+
+        if (!empty($attachment)) {
             $params["attachement"] = $attachement;
         }
         $result = $this->cltHttpService->execute($url, "POST", $params, $tokenAccess, 2);
-        $response = [];
         $response["status"] = $result["status"];
-        if (($result["status"] == 200) || ($result["status"] == 201)) {
+
+        if (in_array($result["status"], [200, 201])) {
             $response["content"] = $result["content"];
         } else {
             $response["content"] = "error";
         }
+
         return $response;
     }
 
@@ -500,9 +497,9 @@ class AccountingService extends SageClickUpService
      * @param string $accountPractice
      * @param $companyId
      * @param $periodId
-     * @return mixed|string|null
+     * @return array
      */
-    public function getCompanyInformation(string $accountPractice, $companyId, $periodId)
+    public function getCompanyInformation(string $accountPractice, $companyId, $periodId): array
     {
         $this->getSageModel();
         $sageModel = $this->ConnectedSageModel;

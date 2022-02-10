@@ -83,6 +83,7 @@ class AccountingController extends SageController
         $attachement = $data['attachment'];
         $entry = $data['entry'];
 
+//TODO ce block est corriger
         if ($attachement instanceof UploadedFile && in_array($attachement->getClientOriginalExtension(),["pdf","jpg","tif"])) {
             $statusUploadFile = $fileUploader->upload($attachement);
             if ($statusUploadFile === false) {

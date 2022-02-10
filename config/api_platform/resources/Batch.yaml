@@ -13,10 +13,10 @@ App\Entity\Batch:
       denormalization_context:
         groups: [ 'batch:write' ]
       method: 'POST'
-      path: /sage/batch/createBatch/accountPractice/{accountPractice}/companyId/{companyId}
+      path: /sage/batch/createBatch/applicationId/{applicationId}/accountPractice/{accountPractice}/companyId/{companyId}
       requirements:
         id: \d+
-      controller: TaxResidenceController::class
+      controller: BatchController::class
       read: [ 'false' ]
       output: [ 'true' ]
 
@@ -28,6 +28,12 @@ App\Entity\Batch:
           - Create a new Batch.
 
         parameters:
+          - in: path
+            name: applicationId
+            schema:
+              type: string
+            allowEmptyValue: false
+            required: true
           - in: path
             name: accountPractice
             schema:
@@ -64,9 +70,11 @@ App\Entity\Batch:
                     description: When there is no taxPayerId for a residence, this field shall be set to true.
 
                 example:
-                  country: 'TU'
-                  taxPayerId: 'xxxxxxxxxxxxxxxx'
-                  liabilityWaiver: 1
+                  batchPayload: 'batchPayload'
+                  batchMetadata:
+                    type: 'AccountingPeriod'
+                    startDate: '2019-01-01T00:00:00'
+                    endDate: '2019-12-31T00:00:00'
 
         responses:
           '201':

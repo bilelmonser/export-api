@@ -67,38 +67,6 @@ class SageClickUpService
         $this->baseUrlApi = $baseUrlSageApi;
     }
 
-    /**
-     * Create Entry function
-     *
-     * @param string $accountPractice
-     * @param string $companyId
-     * @param string $periodId
-     * @param array $attachement
-     * @param array $entry
-     * @return void
-     */
-    public function createEntry(string $accountPractice, string $companyId, string $periodId, $attachement, $entry)
-    {
-        $sageModel = $this->ConnectedSageModel;
-        $appId = $sageModel->getAppId();
-        $tokenAccess = $sageModel->getToken();
-        $url = $this->baseUrlApi.'/applications/'.$appId.'/accountancypractices/'.$accountPractice.'/companies/'.$companyId.'/accounting/periods/'.$periodId.'/entries';
-        $response = [];
-        $params = [];
-        $params["entry"] = $entry;
-        if (isset($attachment) && !empty($attachment)) {
-            $params["attachement"] = $attachement;
-        }
-        $result = $this->cltHttpService->execute($url, "POST", $params, $tokenAccess, 2);
-        if (($result["status"] == 200) || ($result["status"] == 201)) {
-            $response["content"] = $result["content"];
-        } else {
-            $response["content"] = "error";
-        }
-
-        return $response;
-    }
-
     public function getSageModel(){
         $user = $this->security->getUser();
         $sageModels = $user->getSageconfigs();
