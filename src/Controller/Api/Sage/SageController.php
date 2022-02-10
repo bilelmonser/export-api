@@ -17,6 +17,7 @@ class SageController extends AbstractController
 		$response->setStatusCode($resp["status"]);
 		$response->setContent($resp["content"]);
 		$response->headers->set('Content-Type', 'application/json');
+
 		return $response;
 	}
 }
