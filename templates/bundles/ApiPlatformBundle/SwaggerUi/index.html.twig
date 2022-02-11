@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% if title %}{{ title }}{% endif %}</title>
+
+    {% block stylesheet %}
+        <link rel="stylesheet" href="{{ asset('bundles/apiplatform/fonts/open-sans/400.css', assetPackage) }}">
+        <link rel="stylesheet" href="{{ asset('bundles/apiplatform/fonts/open-sans/700.css', assetPackage) }}">
+        <link rel="stylesheet" href="{{ asset('bundles/apiplatform/swagger-ui/swagger-ui.css', assetPackage) }}">
+        <link rel="stylesheet" href="{{ asset('asset/css/style-api.css', assetPackage) }}">
+        <link rel="stylesheet" href="{{ asset('asset/css/custom-api.css', assetPackage) }}">
+    {% endblock %}
+
+    {% set oauth_data = {'oauth': swagger_data.oauth|merge({'redirectUrl' : absolute_url(asset('bundles/apiplatform/swagger-ui/oauth2-redirect.html', assetPackage)) })} %}
+    <script id="swagger-data" type="application/json">{{ swagger_data|merge(oauth_data)|json_encode(65)|raw }}</script>
+</head>
+
+<body>
+<header></header>
+
+<div id="swagger-ui" class="api-platform"></div>
+
+<div class="swagger-ui" id="formats">
+    <div class="information-container wrapper">
+        <div class="info">
+            {% set active_ui = app.request.get('ui', 'swagger_ui') %}
+            {% if swaggerUiEnabled and active_ui != 'swagger_ui' %}
+            <a href="{{ path('api_doc') }}">Swagger UI</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+{% if (reDocEnabled and not swaggerUiEnabled) or (reDocEnabled and 're_doc' == active_ui) %}
+    <script src="{{ asset('bundles/apiplatform/redoc/redoc.standalone.js', assetPackage) }}"></script>
+    <script src="{{ asset('bundles/apiplatform/init-redoc-ui.js', assetPackage) }}"></script>
+{% else %}
+    <script src="{{ asset('bundles/apiplatform/swagger-ui/swagger-ui-bundle.js', assetPackage) }}"></script>
+    <script src="{{ asset('bundles/apiplatform/swagger-ui/swagger-ui-standalone-preset.js', assetPackage) }}"></script>
+    <script src="{{ asset('bundles/apiplatform/init-swagger-ui.js', assetPackage) }}"></script>
+{% endif %}
+{% endblock %}
+
+</body>
+</html>
