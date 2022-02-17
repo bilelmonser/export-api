@@ -50,11 +50,9 @@ class UserController extends AbstractController
             $user = new User();
             $toolsService->setterApi($user,$data);
             $hashedPassword = $passwordHasher->hashPassword(
-//            $hashedPassword = $passwordHasher->encodePassword(
                 $user,
                 $data['password']
             );
-//            dd($hashedPassword);
             $user->setPassword($hashedPassword);
             $user->setRoles(["ROLE_USER"]);
             $errors = $validator->validate($user);
