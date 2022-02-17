@@ -513,17 +513,10 @@ App\Entity\Accounting:
             description: UserCsb not found.
           '5XX':
             description: Unexpected error.
-      itemOperations:
-        get:
-          normalization_context:
-            groups: [ 'kyb:read','kyc:read' ]
 
-          openapi_context:
-            summary: hidden
   itemOperations:
-    get:
-      normalization_context:
-        groups: [ 'kyb:read','kyc:read' ]
 
+    get:
+      controller: NotFoundAction::class
       openapi_context:
         summary: hidden

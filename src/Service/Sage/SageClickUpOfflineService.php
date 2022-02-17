@@ -26,13 +26,14 @@ class SageClickUpOfflineService
         $this->security = $security;
     }
 
+
     /**
      * check Accountancy Practices function
      *
      * @param array $params
-     * @return void
+     * @return array
      */
-    public function checkAccountingPractices($params)
+    public function checkAccountingPractices(array $params): array
     {
         /** @var User $user */
         $user = $this->security->getUser();
@@ -45,6 +46,8 @@ class SageClickUpOfflineService
         $sageModel->setAppId($params["appId"]);
         $sageModel->setClientId($params["clientId"]);
         $sageModel->setClientSecret($params["clientSecret"]);
+//        TODO read expirationToken from config/packages/lexik_jwt_authentication.yaml:5
+        $sageModel->setExpiredtoken(\DateTime::createFromFormat('Y-m-d', '2023-12-31'));
         $this->em->persist($sageModel);
         $this->em->flush();
         $result = [];

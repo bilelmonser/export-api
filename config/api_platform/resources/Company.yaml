@@ -2,13 +2,17 @@ App\Entity\Company:
   attributes:
     security: 'is_granted("ROLE_USER")'
     route_prefix: /sage/company
+
   collectionOperations:
+
     get:
       controller: NotFoundAction::class
       read: false
       output: false
       openapi_context:
         summary: hidden
+
+
     sage_company_get_companies:
       denormalization_context:
         groups: [ 'accountancyPractice:write' ]
@@ -37,18 +41,18 @@ App\Entity\Company:
 
         responses:
           '201':
-            description: Wallet added successfully.
+            description: Get All Companies from Accountancy Practices.
           '400':
             description: Bad request.
           '401':
             description: JWT Token not found.
           '5XX':
             description: Unexpected error.
-  itemOperations:
-    get:
-      normalization_context:
-        groups: [ 'kyb:read','kyc:read' ]
 
+  itemOperations:
+
+    get:
+      controller: NotFoundAction::class
       openapi_context:
         summary: hidden
     

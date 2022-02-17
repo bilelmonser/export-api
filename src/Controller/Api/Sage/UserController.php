@@ -2,14 +2,18 @@
 
 namespace App\Controller\Api\Sage;
 
+use App\Service\App\ToolsService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use App\Service\Sage\ClickUpService;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,14 +22,7 @@ use App\Service\Sage\SageClickUpOfflineService;
 
 class UserController extends AbstractController
 {
-    /**
-     * @var
-     */
-    private $sageService;
 
-    public function __contruct()
-    {
-    }
     /**
      * @Route("/sage/user/createUser", name="users_post", methods={"POST"})
      */
@@ -34,37 +31,50 @@ class UserController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         UserRepository $userRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        ToolsService $toolsService,
+//        UserPasswordEncoderInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher
     ) {
         // deserialize the json
         try {
-            $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+
+            if (null === $request->getContent()){
+                return $this->json(["success" => false, Response::HTTP_BAD_REQUEST]);
+            }
+            $data = json_decode($request->getContent(),true);
+            $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
+            if($user !== null){
+                return $this->json(["success" => false, "message"=> "Cette utilisateur existe déjà!"], Response::HTTP_BAD_REQUEST);
+            }
+            $user = new User();
+            $toolsService->setterApi($user,$data);
+            $hashedPassword = $passwordHasher->hashPassword(
+//            $hashedPassword = $passwordHasher->encodePassword(
+                $user,
+                $data['password']
+            );
+//            dd($hashedPassword);
+            $user->setPassword($hashedPassword);
             $user->setRoles(["ROLE_USER"]);
-            $sageMmodel =    $serializer->deserialize($request->getContent(), User::class, 'json');
+            $errors = $validator->validate($user);
+            if (count($errors) > 0) {
+                $json = $serializer->serialize($errors, 'json', array_merge([
+                    'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+                ], []));
+                return $this->json($json, Response::HTTP_BAD_REQUEST);
+            }
+
+            $em->persist($user);
+            // todo voir avec Saleh et Bilel le nouveau algorithme
+            //$sageMmodel =    $serializer->deserialize($request->getContent(), User::class, 'json');
+            //$em->persist($sageModel);
+            $em->flush();
+
         } catch (NotEncodableValueException $exception) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Invalid Json');
+            return $this->json(["success" => false, "message"=>$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
-
-        $errors = $validator->validate($user);
-
-        if (count($errors) > 0) {
-            /*
-             * Uses a __toString method on the $errors variable which is a
-             * ConstraintViolationList object. This gives us a nice string
-             * for debugging.
-             */
-            $json = $serializer->serialize($errors, 'json', array_merge([
-                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
-            ], []));
-
-            return new JsonResponse($json, Response::HTTP_BAD_REQUEST, [], true);
-        }
-
-        $em->persist($user);
-        $em->persist($sageModel);
-        $em->flush();
-
-        return new Response(null, Response::HTTP_CREATED);
+        return $this->json(["success" => true], Response::HTTP_CREATED);
     }
 
     /**
@@ -74,10 +84,12 @@ class UserController extends AbstractController
     {
         try {
             $data =  $request->getContent();
+
             if(null === $data){
                 return $this->json(["error"=>"pas de contenu à traité"],Response::HTTP_BAD_REQUEST);
             }
             $params = json_decode($data,true);
+
             if(!count($params)){
                 return $this->json(["error"=>"pas de contenu à traité"],Response::HTTP_BAD_REQUEST);
             }

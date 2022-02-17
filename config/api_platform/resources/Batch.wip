@@ -90,10 +90,8 @@ App\Entity\Batch:
           '5XX':
             description: Unexpected error.
   itemOperations:
-    get:
-      normalization_context:
-        groups: [ 'kyb:read','kyc:read' ]
 
+    get:
+      controller: NotFoundAction::class
       openapi_context:
         summary: hidden
-    

@@ -46,6 +46,7 @@ class CompaniesService extends SageClickUpService
                     $this->em->getRepository(Company::class)->findByAccountancyPracticeAll([$accountPracticeObj])
                 );
             } else {
+
                 if (!empty($accountPracticeObj) && (!empty(json_decode($result["content"], true)))) {
                     $this->saveCompanies(json_decode($result["content"], true), $accountPracticeObj);
                 }
@@ -65,33 +66,24 @@ class CompaniesService extends SageClickUpService
     public function saveCompanies(array $content, AccountancyPractice $accountancyPractice)
     {
         $allSavedCompanies = $this->em->getRepository(Company::class)->findBy(["accountancyPractice" => $accountancyPractice]);
-        foreach ($content as $val) {
-            $existId = false;
-            $objUpdated = null;
-            foreach ($allSavedCompanies as $ind2 => $val2) {
-                if ($val['id'] == $val2->getId()) {
-                    $existId = true;
-                    $objUpdated = $val2;
-                }
-            }
-            if ($existId == false) {
-                $this->em->persist(
-                    (new Company())
-                        ->setSageId($val["id"])
-                        ->setBusinessId($val["businessId"])
-                        ->setName($val["name"])
-                        ->setIsAccountancyPractice($val["isAccountancyPractice"])
-                        ->setAccountancyPractice($accountancyPractice)
-                );
-            } else {
-                $this->em->persist(
-                    $objUpdated->setBusinessId($val["businessId"])
-                        ->setName($val["name"])
-                        ->setIsAccountancyPractice($val["isAccountancyPractice"])
-                        ->setAccountancyPractice($accountancyPractice)
-                );
-            }
+
+
+        $allSavedCompaniesBySageIdIdx = [];
+
+        foreach ($allSavedCompanies as $company) {
+            $allSavedCompaniesBySageIdIdx[$company->getSageId()] = $company;
         }
+
+        foreach ($content as $val) {
+
+            $company = ($allSavedCompaniesBySageIdIdx[$val["id"]] ?? new Company())
+                ->setSageId($val["id"])
+                ->setBusinessId($val["businessId"])
+                ->setName($val["name"])
+                ->setIsAccountancyPractice($val["isAccountancyPractice"])
+                ->setAccountancyPractice($accountancyPractice);
+        }
+        $this->em->persist($company);
 
         $this->em->flush();
     }
