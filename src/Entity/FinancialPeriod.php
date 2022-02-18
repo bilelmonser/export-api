@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource()
+ * @Table(schema="public")
  * @ORM\Entity(repositoryClass="App\Repository\FinancialPeriodRepository", repositoryClass=FinancialPeriodRepository::class)
  */
 class FinancialPeriod

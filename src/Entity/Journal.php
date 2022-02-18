@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=JournalRepository::class)
+ * @Table(schema="public")
  */
 class Journal
 {

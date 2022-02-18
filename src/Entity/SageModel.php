@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SageModelRepository::class)
+ * @Table(schema="public")
  */
 class SageModel
 {
@@ -66,7 +67,7 @@ class SageModel
      * @var \App\Entity\User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * 
+     *
      */
     private $idUser;
 

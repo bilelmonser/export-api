@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
-  * @Table()
+ * @Table(schema="public")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -55,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
       * @ORM\Column(type="string", unique=true, nullable=true)
       */
     private $apiToken;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\SageModel", mappedBy="idUser")
      */
@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->sageconfigs;
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -166,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
+
     /**
      * Returning a salt is only needed, if you are not using a modern
      * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.

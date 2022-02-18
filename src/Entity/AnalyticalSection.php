@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=AnalyticalSectionRepository::class)
+ * @Table(schema="public")
  */
 class AnalyticalSection
 {
