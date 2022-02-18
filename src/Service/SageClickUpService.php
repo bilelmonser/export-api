@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
 use App\Service\Sage\ClientHttpService;
 use App\Entity\SageModel;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SageClickUpService
 {
@@ -19,27 +20,29 @@ class SageClickUpService
     public const STATUS_NO_CONTENT = ['204'];
 
 
-    protected $em;
-    protected $cltHttpService;
-    private $security;
+    protected EntityManagerInterface $em;
+    protected ClientHttpService $cltHttpService;
+    private Security $security;
     protected $baseUrlApi;
-    protected $serializer;
+    protected SerializeService $serializer;
     private $accountancyPractice;
-    protected $requestStack;
-    private $log;
+    protected RequestStack $requestStack;
+    private LoggerInterface $log;
     protected $ConnectedUser;
     protected $ConnectedSageModel;
+    protected HttpClientInterface $client;
 
 
     /**
      * ClientHttpService constructor.
+     * @param $baseUrlSageApi
      * @param EntityManagerInterface $em
      * @param ClientHttpService $cltHttpService
      * @param Security $security
      * @param SerializeService $serializeService
      * @param RequestStack $requestStack
      * @param LoggerInterface $logger
-     * @param $baseUrlSageApi
+     * @param HttpClientInterface $client
      * @throws Exception
      */
     public function __construct(
@@ -49,7 +52,8 @@ class SageClickUpService
         Security $security,
         SerializeService $serializeService,
         RequestStack $requestStack,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        HttpClientInterface $client
     ) {
         $this->em = $em;
         $this->requestStack = $requestStack;
@@ -65,10 +69,14 @@ class SageClickUpService
         $this->serializer = $serializeService;
         $this->log = $logger;
         $this->baseUrlApi = $baseUrlSageApi;
+        $this->client = $client;
     }
 
-    public function getSageModel(){
-        $user = $this->security->getUser();
+    public function getSageModel($user = null){
+        if($user === null){
+            $user = $this->security->getUser();
+        }
+
         $sageModels = $user->getSageconfigs();
         foreach ($sageModels as $sageModel){
             $this->ConnectedUser = $user;
@@ -77,10 +85,10 @@ class SageClickUpService
         }
 
     }
+
     /**
      * Login Sage ClickUp function
-     *
-     * @return void
+     * @return false|void
      * @throws Exception
      */
     private function loginSage()

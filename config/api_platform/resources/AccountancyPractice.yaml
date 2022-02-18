@@ -16,9 +16,10 @@ App\Entity\AccountancyPractice:
       output: false
       openapi_context:
         summary: hidden
+
     sage_accountancy_practices:
-      denormalization_context:
-        groups: [ 'accountancyPractice:write' ]
+      normalization_context:
+        groups: [ 'accountancyPractice:read' ]
       method: 'GET'
       path: /sage/accountancy/getAccountancyPractices
       controller: AccountancyController::class
@@ -34,19 +35,19 @@ App\Entity\AccountancyPractice:
 
           - Mandatory parameters  :
 
-        parameters: ~
         responses:
           '201':
-            description: Wallet added successfully.
+            description: Get All Accountancy Practices.
           '400':
             description: Bad request.
           '401':
             description: JWT Token not found.
           '5XX':
             description: Unexpected error.
+
     sage_options_accountancy_practices:
-      denormalization_context:
-        groups: [ 'accountancyPractice:write' ]
+      normalization_context:
+        groups: [ 'accountancyPractice:read' ]
       method: 'GET'
       path: /sage/accountancy/getAccountancyPracticesOption/accountPractice/{accountPractice}
       controller: Accountancy::class
@@ -74,7 +75,7 @@ App\Entity\AccountancyPractice:
 
         responses:
           '201':
-            description: Wallet added successfully.
+            description: Get All Options Accountancy Practice.
           '400':
             description: Bad request.
           '401':
@@ -144,9 +145,8 @@ App\Entity\AccountancyPractice:
             description: Unexpected error.
 
   itemOperations:
-    get:
-      normalization_context:
-        groups: [ 'kyb:read','kyc:read' ]
 
+    get:
+      controller: NotFoundAction::class
       openapi_context:
         summary: hidden

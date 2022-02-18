@@ -38,3 +38,7 @@ services:
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%brochures_directory%'
+    App\Service\App\ToolsService:
+        arguments:
+            # this is not a string, but a reference to a service called 'logger'
+            - '@monolog.logger.setter_channel'

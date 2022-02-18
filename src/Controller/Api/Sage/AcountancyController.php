@@ -38,20 +38,23 @@ class AcountancyController extends SageController
                 $odataStr .= $ind."=".$val;
                 $i++;
             }
-        }        
-        $resp = $this->sageService->getAccountingPractices($odataStr, $this->getUser());
+        }
+        $resp = $this->sageService->getAccountingPractices($this->getUser(), $odataStr);
         return $this->createResponse($resp);
     }
+
     /**
      * @Route("/api/sage/accountancy/getAccountancyPracticesOption/accountPractice/{accountPractice}", name="sage_options_accountancy_practices")
+     * @param string $accountPractice
+     * @return Response
      */
-    public function getAccountancyPracticesOptions(Request $request)
+    public function getAccountancyPracticesOptions(string $accountPractice): Response
     {
-        $accountPractice = ($request->attributes->get('accountPractice')) ? $request->attributes->get('accountPractice') : '';
         $resp = $this->sageService->getOptionAccountingPractice($accountPractice);
         $response = new Response();
         $response->setContent($resp["content"]);
+        $response->setStatusCode($resp["content"]);
         $response->headers->set('Content-Type', 'application/json');
-        return $response;
+        return $response; // TODO a revoire le retour vide
     }
 }

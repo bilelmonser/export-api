@@ -16,34 +16,15 @@ use Symfony\Component\Security\Core\Security;
 
 class AccountancyPracticeService extends SageClickUpService
 {
-    public function __construct(
-        $baseUrlSageApi,
-        EntityManagerInterface $em,
-        ClientHttpService $cltHttpService,
-        Security $security,
-        SerializeService $serializeService,
-        RequestStack $requestStack,
-        LoggerInterface $logger
-    ) {
-        parent::__construct(
-            $baseUrlSageApi,
-            $em,
-            $cltHttpService,
-            $security,
-            $serializeService,
-            $requestStack,
-            $logger
-        );
-    }
 
     /**
      * get Accounting Practices function
      *
      * @return void
      */
-    public function getAccountingPractices(string $odataStr = "", ?User $user= null) : array
+    public function getAccountingPractices(User $user, string $odataStr = "") : array
     {
-        $this->getSageModel();
+        $this->getSageModel($user);
         $sageModel = $this->ConnectedSageModel;
         $app_id = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
@@ -58,6 +39,7 @@ class AccountancyPracticeService extends SageClickUpService
         if (in_array($result["status"], $this::STATUS_ERROR_SERVER)) {
             $response["content"] = $result["content"];
         } else {
+
             if (in_array($result["status"], $this::STATUS_NOT_FOUND) || in_array(
                 $result["status"],
                 $this::STATUS_NO_CONTENT
@@ -71,6 +53,7 @@ class AccountancyPracticeService extends SageClickUpService
                 $response["content"] = $result["content"];
             }
         }
+
         return $response;
     }
 
@@ -78,14 +61,13 @@ class AccountancyPracticeService extends SageClickUpService
      * Get Options For Accounting Practice  function
      *
      * @param String $accountPractice
-     * @return void
+     * @return array|void
      */
-    public function getOptionAccountingPractice($accountPractice)
+    public function getOptionAccountingPractice(string $accountPractice)
     {
         $sageModel = $this->ConnectedSageModel;
         $app_id = $sageModel->getAppId();
         $tokenAccess = $sageModel->getToken();
-        $accountPractice = '5a84d143-5fb1-4fce-bac0-b19ec942231c';
         $url = $this->baseUrlApi . '/accountancypractices/' . $accountPractice . '/applications/' . $app_id . '/options';
 
         return $this->cltHttpService->execute($url, "GET", [], $tokenAccess);
@@ -97,36 +79,41 @@ class AccountancyPracticeService extends SageClickUpService
      */
     public function saveAccountancyPracticesDb(array $content, ?User $user)
     {
+        /** @var AccountancyPractice[] $accountancyPractices */
         $accountancyPractices = $this->em->getRepository(AccountancyPractice::class)->findBy(["sageModel" => $user->getSageconfigs()->first()]);
+
+        $accountancyPracticesTmp = $accountancyPractices;
+
         foreach ($content as $val) {
             $existId = false;
             $objUpdated = null;
-            foreach ($accountancyPractices as $ind2 => $val2) {
-                if ($val["id"] == $val2->getId()) {
+
+            foreach ($accountancyPracticesTmp as $ind2 => $val2) {
+
+                if ($val["id"] == $val2->getSageId()) {
                     $existId = true;
                     $objUpdated = $val2;
+                    unset($accountancyPracticesTmp[$ind2]);
                     break;
                 }
             }
-            if ($existId == false) {
-                $this->em->persist(
-                    (new AccountancyPractice())
-                        ->setSageId($val["id"])
-                        ->setBusinessId($val["businessId"])
-                        ->setName($val["name"])
-                        ->setOriginSageApplication($val["originSageApplication"])
-                        ->setContactEmail($val["contactEmail"])
-                        ->setSageModel($user->getSageconfigs()->first())
-                );
-            } else {
-                $this->em->persist(
-                    $objUpdated->setBusinessId($val["businessId"])
-                        ->setName($val["name"])
-                        ->setOriginSageApplication($val["originSageApplication"])
-                        ->setContactEmail($val["contactEmail"])
-                        ->setSageModel($user->getSageconfigs()->first())
-                );
-            }
+
+            $accountancyPractice = !$existId ? (new AccountancyPractice())
+                ->setSageId($val["id"])
+                ->setBusinessId($val["businessId"])
+                ->setName($val["name"])
+                ->setOriginSageApplication($val["originSageApplication"])
+                ->setContactEmail($val["contactEmail"])
+                ->setSageModel($user->getSageconfigs()->first())
+                :
+                $objUpdated
+                    ->setBusinessId($val["businessId"])
+                    ->setName($val["name"])
+                    ->setOriginSageApplication($val["originSageApplication"])
+                    ->setContactEmail($val["contactEmail"])
+                    ->setSageModel($user->getSageconfigs()->first());
+
+            $this->em->persist($accountancyPractice);
         }
 
         $this->em->flush();
