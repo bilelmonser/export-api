@@ -7,9 +7,11 @@ use App\Repository\JournalRepository;
 use App\Entity\FinancialPeriod;
 use App\Entity\Company;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=JournalRepository::class)
+ * @Table(schema="public")
  */
 class Journal
 {

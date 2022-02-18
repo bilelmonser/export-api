@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\SageModelRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=SageModelRepository::class)
+ * @Table(schema="public")
  */
 class SageModel
 {
@@ -66,7 +68,7 @@ class SageModel
      * @var \App\Entity\User
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * 
+     *
      */
     private $idUser;
 

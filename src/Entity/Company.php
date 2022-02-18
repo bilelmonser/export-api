@@ -5,10 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass=CompanyRepository::class)
+ * @Table(schema="public")
  */
 class Company
 {

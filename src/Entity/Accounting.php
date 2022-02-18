@@ -5,10 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\AccountingRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass=AccountingRepository::class)
+ * @Table(schema="public")
  */
 class Accounting
 {

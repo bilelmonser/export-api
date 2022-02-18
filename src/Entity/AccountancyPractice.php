@@ -5,9 +5,11 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\AccountancyPracticeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass=AccountancyPracticeRepository::class)
+ * @Table(schema="public")
  */
 class AccountancyPractice
 {
@@ -128,7 +130,7 @@ class AccountancyPractice
     /**
      * Get SageModel
      *
-     * @return \App\Entity\SageModel 
+     * @return \App\Entity\SageModel
      */
     public function getSageModel()
     {

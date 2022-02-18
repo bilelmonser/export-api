@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\AnalyticalSectionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=AnalyticalSectionRepository::class)
+ * @Table(schema="public")
  */
 class AnalyticalSection
 {

@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\IbizaModelRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ORM\Entity(repositoryClass=IbizaModelRepository::class)
+ * @Table(schema="public")
  */
 class IbizaModel
 {

@@ -6,9 +6,11 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\FinancialPeriodRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @ApiResource()
+ * @Table(schema="public")
  * @ORM\Entity(repositoryClass="App\Repository\FinancialPeriodRepository", repositoryClass=FinancialPeriodRepository::class)
  */
 class FinancialPeriod
