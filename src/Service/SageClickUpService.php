@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Service\App\SerializeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
