@@ -15,23 +15,52 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class FinancialPeriodRepository extends ServiceEntityRepository
 {
+
+
+    public const FINANCIAL_PERIOD_ORIGINAL_KEYS = [
+        'code',//  code
+        'financialPeriodName',//  financialPeriodName
+        'startDate',//  startDate
+        'endDate',//  endDate
+        'closed',//  closed
+        'extras.firstFinancialDate',//  extrasFirstFinancialDate
+        'extras.fiscalEndOfTheFirstFiscalPeriod',//  extrasFiscalEndOfTheFirstFiscalPeriod
+        'extras.accountLabelLength',//  extrasAccountLabelLength
+        'extras.tradingAccountLength',//  extrasTradingAccountLength
+        'extras.accountingLineLabelLength',//  extrasAccountingLineLabelLength
+        'extras.accountLength',//  extrasAccountLength
+        'extras.authorizationAlphaAccounts',//  extrasAuthorizationAlphaAccounts
+        'extras.amountsLength',//  extrasAmountsLength
+        'extras.withQuantities',//  extrasWithQuantities
+        'extras.withDueDates',//  extrasWithDueDates
+        'extras.withMultipleDueDates',//  extrasWithMultipleDueDates
+        '$uuid'//  uuid
+    ];
+
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, FinancialPeriod::class);
     }
 
     /**
-    * @return Company[] Returns an array of Company objects
-    */
-    
-    public function findByCompanyAll($value): array
+     * @param $company
+     * @return Company[] Returns an array of Company objects
+     */
+    public function findByCompanyAll($company): array
     {
-        return $this->createQueryBuilder('f')
-            ->select('f.code','f.financialPeriodName','c.startDate','c.endDate','f.closed','f.ExtrasFirstFinancialDate as extras.firstFinancialDate','c.ExtrasFiscalEndOfTheFirstFiscalPeriod as extras.fiscalEndOfTheFirstFiscalPeriod','c.ExtrasAccountLabelLength as extras.accountLabelLength','f.ExtrasTradingAccountLength as extras.tradingAccountLength','f.ExtrasAccountingLineLabelLength as extras.accountingLineLabelLength','c.ExtrasAccountLength as extras.accountLength','c.ExtrasAuthorizationAlphaAccounts as extras.authorizationAlphaAccounts','f.ExtrasAmountsLength as extras.amountsLength','f.ExtrasWithQuantities as extras.withQuantities','c.ExtrasWithDueDates as extras.withDueDates','c.ExtrasWithMultipleDueDates as extras.withMultipleDueDates','f.uuid as $uuid')
-            ->andWhere('c.company = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getResult()
-        ;
+        $allFinPeriodsFromDB = $this->createQueryBuilder('f')
+            ->select('f.code','f.financialPeriodName','f.startDate','f.endDate','f.closed','f.extrasFirstFinancialDate','f.extrasFiscalEndOfTheFirstFiscalPeriod','f.extrasAccountLabelLength','f.extrasTradingAccountLength','f.extrasAccountingLineLabelLength','f.extrasAccountLength','f.extrasAuthorizationAlphaAccounts','f.extrasAmountsLength','f.extrasWithQuantities','f.extrasWithDueDates','f.extrasWithMultipleDueDates','f.uuid')
+            ->andWhere('f.company = :val')
+            ->setParameter('val', $company)
+            ->getQuery()->getResult();
+
+        $allFinPeriods = [];
+
+        foreach ($allFinPeriodsFromDB as $resfrnbase){
+            $allFinPeriods[] = array_combine(self::FINANCIAL_PERIOD_ORIGINAL_KEYS, array_values($resfrnbase));
+        }
+
+        return $allFinPeriods;
     }
 }
