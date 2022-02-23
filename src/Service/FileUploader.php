@@ -21,8 +21,7 @@ class FileUploader
 
 	public function upload(UploadedFile $file)
 	{
-		$originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-		$fileName = uniqid() . $originalFilename;
+		$fileName = uniqid() . $file->getClientOriginalName();
 		$validateFile = $this->validateFile($file);
 		if ($validateFile === false) {
 			return false;

@@ -444,11 +444,11 @@ class AccountingService extends SageClickUpService
      * @param string $accountPractice
      * @param string $companyId
      * @param string $periodId
-     * @param $attachement
+     * @param $attachment
      * @param $entry
      * @return array
      */
-    public function createEntry(string $accountPractice, string $companyId, string $periodId, $attachement, $entry): array
+    public function createEntry(string $accountPractice, string $companyId, string $periodId, $attachment, $entry): array
     {
         $sageModel = $this->ConnectedSageModel;
         $appId = $sageModel->getAppId();
@@ -458,7 +458,7 @@ class AccountingService extends SageClickUpService
         $params["entry"] = $entry;
 
         if (!empty($attachment)) {
-            $params["attachement"] = $attachement;
+            $params["attachment"] = $attachment;
         }
         $result = $this->cltHttpService->execute($url, "POST", $params, $tokenAccess, 2);
         $response = [];

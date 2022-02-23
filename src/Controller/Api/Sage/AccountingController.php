@@ -75,10 +75,12 @@ class AccountingController extends SageController
      */
     public function createEntry(Request $request, $accountPractice, $companyId, $periodId, FileUploader $fileUploader, AccountingService $sageService): Response
     {
-        $attachement = $request->files->get('attachment');
+        $attachment = $request->files->get('attachment');
         $entry = $request->request->get('entry');
-        if ($attachement) {
-            $statusUploadFile = $fileUploader->upload($attachement);
+
+        if ($attachment) {
+            $statusUploadFile = $fileUploader->upload($attachment);
+
             if ($statusUploadFile === false) {
                 $response = new Response();
                 $response->setContent("Error Upload File");
@@ -87,10 +89,13 @@ class AccountingController extends SageController
 
                 return $response;
             }
-            $attachement = $this->getParameter("baseUrlApi") . "/" . $statusUploadFile;
+
+            $attachment = $this->getParameter("brochures_directory") . "/" . $statusUploadFile;
         }
 
-        $resp = $sageService->createEntry($accountPractice, $companyId, $periodId, $attachement, $entry);
+
+
+        $resp = $sageService->createEntry($accountPractice, $companyId, $periodId, $attachment, $entry);
 
         return $this->createResponse($resp);
     }
