@@ -87,62 +87,6 @@ class SageClickUpService
 
     /**
      * Login Sage ClickUp function
-     * @return false|void
-     * @throws Exception
-     */
-    private function loginSage()
-    {
-        $user = $this->security->getUser();
-        $sageModels = $user->getSageconfigs();
-        $today = date("Y-m-d H:i:s");
-        foreach ($sageModels as $sageModel) {
-            if($sageModel->getExpiredtoken()){
-                $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s') ;
-            }else{
-                $dateExpiredDt = new \DateTime();
-                $dateExpiredDt->modify("+10 days");
-                $dateExpired = $dateExpiredDt->format('Y-m-d H:i:s');
-            }
-            if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
-                $url_auth = $sageModel->getUrlAuth();
-                $grant_type = $sageModel->getGrantType();
-                $client_id = $sageModel->getClientId();
-                $client_secret = $sageModel->getClientSecret();
-                $audience = $sageModel->getAudience();
-                $response = $this->cltHttpService->execute(
-                    $url_auth,
-                    "POST",
-                    [
-                        "grant_type" => $grant_type,
-                        "client_id" => $client_id,
-                        "client_secret" => $client_secret,
-                        "audience" => $audience,
-                    ],
-                    "",
-                    1
-                );
-                $response["content"] = json_decode($response["content"], true);
-                if (isset($response["content"]["access_token"])) {
-                    $now = new \DateTime();
-                    $now->add(new \DateInterval('PT'.$response["content"]["expires_in"].'S'));
-                    $sageModel->setToken($response["content"]["access_token"]);
-                    $sageModel->setExpiredToken($now);
-                    $this->em->persist($sageModel);
-                    $this->em->flush();
-                } else {
-                    return false;
-                }
-                $this->ConnectedUser = $this->em->getRepository(User::class)->findOneBy(['email' => 'admin2@admin.com']
-                );
-            }
-            $this->ConnectedUser = $user;
-            $this->ConnectedSageModel = $sageModel;
-            break;
-        }
-    }
-
-    /**
-     * Login Sage ClickUp function
      *
      * @return void
      * @throws Exception
@@ -160,9 +104,9 @@ class SageClickUpService
             return null;
         }
 
-        $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
+        $dateExpired = $sageModel->getExpiredtoken() ? $sageModel->getExpiredtoken()->format('Y-m-d H:i:s') : null;
 
-        if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
+        if (empty($sageModel->getToken()) || empty($dateExpired) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
             $url_auth = $sageModel->getUrlAuth();
             $grant_type = $sageModel->getGrantType();
             $client_id = $sageModel->getClientId();
@@ -194,6 +138,7 @@ class SageClickUpService
             }
             $this->ConnectedSageModel = $sageModel;
         }
+
 		$this->ConnectedSageModel = $sageModel;
     }
 }
