@@ -64,9 +64,7 @@ class SageClickUpService
         ) : '';
         $this->cltHttpService = $cltHttpService;
         $this->security = $security;
-        if ($this->loginSageByAccountancyPractice() === false) {
-            $this->loginSage();
-        }
+		$this->loginSageByAccountancyPractice();
         $this->serializer = $serializeService;
         $this->log = $logger;
         $this->baseUrlApi = $baseUrlSageApi;
@@ -151,14 +149,17 @@ class SageClickUpService
      */
     private function loginSageByAccountancyPractice()
     {
+    	/** @var SageModel $sageModel */
         $sageModel = $this->em->getRepository(SageModel::class)->findOneBy(
             ['AccountancyPractice' => $this->accountancyPractice]
         );
 
         $today = date("Y-m-d H:i:s");
+
         if (empty($sageModel)) {
-            return false;
+            return null;
         }
+
         $dateExpired = $sageModel->getExpiredtoken()->format('Y-m-d H:i:s');
 
         if (empty($sageModel->getToken()) || (!empty($sageModel->getToken()) && ($today > $dateExpired))) {
@@ -179,6 +180,7 @@ class SageClickUpService
                 "",
                 1
             );
+
             $response["content"] = json_decode($response["content"], true);
             if (isset($response["content"]["access_token"])) {
                 $now = new \DateTime();
@@ -188,13 +190,10 @@ class SageClickUpService
                 $this->em->persist($sageModel);
                 $this->em->flush();
             } else {
-                return false;
+                return null;
             }
-            $this->ConnectedSageModel = $this->em->getRepository(SageModel::class)->findOneBy(
-                ['AccountancyPractice' => $this->accountancyPractice]
-            );
-        } else {
             $this->ConnectedSageModel = $sageModel;
         }
+		$this->ConnectedSageModel = $sageModel;
     }
 }

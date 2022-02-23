@@ -47,7 +47,7 @@ class SageClickUpOfflineService
         $sageModel->setClientId($params["clientId"]);
         $sageModel->setClientSecret($params["clientSecret"]);
 //        TODO read expirationToken from config/packages/lexik_jwt_authentication.yaml:5
-        $sageModel->setExpiredtoken(\DateTime::createFromFormat('Y-m-d', '2023-12-31'));
+        $sageModel->setExpiredtoken(null);
         $this->em->persist($sageModel);
         $this->em->flush();
         $result = [];
