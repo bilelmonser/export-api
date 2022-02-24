@@ -41,18 +41,12 @@ class ClientHttpService
                 break;
             case 2:
                 if ((isset($params["attachment"])) && file_exists($params["attachment"])) {
-					// get size of the binary file
-					$filesize = filesize($params["attachment"]);
-					// open file for reading in binary mode
-					$fp = fopen($params["attachment"], 'rb');
-					// read the entire file into a binary string
-					$params["attachment"] = fread($fp, $filesize);
+					$params['attachment'] = DataPart::fromPath($params["attachment"]);
                 }
 
                 $formData = new FormDataPart($params);
                 $paramsBody["headers"] = $formData->getPreparedHeaders()->toArray();
-                $paramsBody["body"] = $formData->bodyToIterable();
-
+                $paramsBody["body"] = $formData->bodyToString();
                 break;
             default:
                 $paramsBody = [];
