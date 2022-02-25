@@ -21,7 +21,8 @@ class FileUploader
 
 	public function upload(UploadedFile $file)
 	{
-		$fileName = uniqid() . $file->getClientOriginalName();
+		$file->guessClientExtension();
+		$fileName = time().''.rand(0,999).'.'.$file->guessClientExtension();
 		$validateFile = $this->validateFile($file);
 		if ($validateFile === false) {
 			return false;
