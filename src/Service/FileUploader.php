@@ -22,16 +22,15 @@ class FileUploader
 	public function upload(UploadedFile $file)
 	{
 		$file->guessClientExtension();
-		$fileName = time().''.rand(0,999).'.'.$file->guessClientExtension();
 		$validateFile = $this->validateFile($file);
 		if ($validateFile === false) {
 			return false;
 		}
 		try {
-			$file->move($this->getTargetDirectory(), $fileName);
+			$file->move($this->getTargetDirectory());
 		} catch (FileException $e) {
 		}
-		return $fileName;
+		return $file->getFilename();
 	}
 
 	public function getTargetDirectory()
