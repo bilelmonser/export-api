@@ -82,14 +82,14 @@ class AccountingService extends SageClickUpService
             $financialPeriods = ($finPeriodsByUuidIdx[$val['$uuid']] ?? new FinancialPeriod())
                 ->setCode($val["code"])
                 ->setFinancialPeriodName($val["financialPeriodName"])
-                ->setStartDate($dateTimeObj->createFromFormat('Y-m-d\TH:i:s', $val["startDate"]))
-                ->setEndDate($dateTimeObj->createFromFormat('Y-m-d\TH:i:s', $val["endDate"]))
+                ->setStartDate($dateTimeObj->createFromFormat('Y-m-d\TH:i:s\Z', $val["startDate"]))
+                ->setEndDate($dateTimeObj->createFromFormat('Y-m-d\TH:i:s\Z', $val["endDate"]))
                 ->setClosed($val["closed"])
                 ->setExtrasFirstFinancialDate(
-                    $dateTimeObj->createFromFormat('Y-m-d\TH:i:s', $val["extras.firstFinancialDate"])
+                    $dateTimeObj->createFromFormat('Y-m-d\TH:i:s\Z', $val["extras.firstFinancialDate"])
                 )
                 ->setExtrasFiscalEndOfTheFirstFiscalPeriod(
-                    $dateTimeObj->createFromFormat('Y-m-d\TH:i:s', $val["extras.fiscalEndOfTheFirstFiscalPeriod"])
+                    $dateTimeObj->createFromFormat('Y-m-d\TH:i:s\Z', $val["extras.fiscalEndOfTheFirstFiscalPeriod"])
                 )
                 ->setExtrasAccountLabelLength($val["extras.accountLabelLength"])
                 ->setExtrasTradingAccountLength($val["extras.tradingAccountLength"])
